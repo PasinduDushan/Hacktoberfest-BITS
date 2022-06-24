@@ -109,7 +109,7 @@ router.post("/", async (req, res, next) => {
                     from: '"BITS 22" <pasindudushan07@yahoo.com>',
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
-                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact oe of our site admins immediately. If everything is correct please click below link to verify your email</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul><br><b>Confirmation Link - http://localhost:3000/verification/${verification_link}`, // plain text body
+                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct please click below link to verify your email</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul><br><b>Confirmation Link - http://localhost:3000/verification/${verification_link}`, // plain text body
                   });
 
                   console.log("Message sent: %s", info.messageId);
