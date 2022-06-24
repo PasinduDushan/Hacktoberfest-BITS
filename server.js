@@ -22,7 +22,7 @@ db.once("open", () => {});
 
 app.use(
   session({
-    secret: "work hard",
+    secret: "LHDIDH$#%@$^#$^oq$#@%FSDFDSF@$ihvVSFIVHISHI41$#@^#%&#$$@#$JBVVLJSV",
     resave: true,
     saveUninitialized: false,
     store: new MongoStore({
@@ -42,15 +42,12 @@ app.use(express.static(__dirname + "/views"));
 const index = require("./routes/index");
 app.use("/", index);
 
-// catch 404 and forward to error handler
 app.use((req, res, next) => {
   const err = new Error("File Not Found");
   err.status = 404;
   next(err);
 });
 
-// error handler
-// define as the last app.use callback
 app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.send(err.message);
