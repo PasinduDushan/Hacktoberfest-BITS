@@ -1,42 +1,84 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-	<title>Login Register App</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
-	</script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="./css/main.css">
-</head>
-
-<body>
-	<div class="col-md-4 col-md-offset-4 form-card">
-		<div>
-			<p>Profile Detail</p>
-		</div>
-		<div>
-			<center>
-				<table class="table table-hover text-center">
-					<tr>
-						<td>Name </td>
-						<td>
-							<%= name %>
-						</td>
-					</tr>
-					<tr>
-						<td>Email </td>
-						<td>
-							<%= email %>
-						</td>
-					</tr>
-				</table>
-			</center>
-		</div>
-		<div class="abc" id="LangTable">
-			<a href="/logout">Logout</a>
-		</div>
-	</div>
-</body>
-
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+  </head>
+    <body>
+		<center><u><h2>Choosed Tasks</h2></u><br>
+			<% if (choosedResults.length === 0) { %>
+				<h4>You've not choosen any tasks</h4>
+			 <% } else { %>
+				<div class="row row-cols-1 row-cols-md-3 g-4">
+					<% choosedResults.forEach(function(data) { %>
+						<div class="col">
+							<div class="card">
+							  <div class="card-body">
+								<h5 class="card-title"><%= data.task_title %></h5>
+								<p class="card-text"><%= data.task_description %></p>
+								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+							  </div>
+							</div>
+						  </div>
+					<% }) %>
+				</div>
+			 <% } %><br><br>
+			<h2><u>Pending Tasks</u></h2><br>
+			<% if (pendingResults.length === 0) { %>
+				<h4>You don't have any approval pending task. Submit a task :))</h4>
+			 <% } else { %>
+				<div class="row row-cols-1 row-cols-md-3 g-4">
+					<% pendingResults.forEach(function(data) { %>
+						<div class="col">
+							<div class="card">
+							  <div class="card-body">
+								<h5 class="card-title"><%= data.task_title %></h5>
+								<p class="card-text"><%= data.task_description %></p>
+								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+							  </div>
+							</div>
+						  </div>
+					<% }) %>
+				</div>
+			 <% } %><br><br>
+			<h2><u>Accepted Tasks</u></h2><br>
+			<% if (approvedResults.length === 0) { %>
+				<h4>You don't have any approved tasks right now</h4>
+			 <% } else { %>
+				<div class="row row-cols-1 row-cols-md-3 g-4">
+					<% approvedResults.forEach(function(data) { %>
+						<div class="col">
+							<div class="card">
+							  <div class="card-body">
+								<h5 class="card-title"><%= data.task_title %></h5>
+								<p class="card-text"><%= data.task_description %></p>
+								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+							  </div>
+							</div>
+						  </div>
+					<% }) %>
+				</div>
+			 <% } %><br><br>
+			<h2><u>Declined Tasks</u></h2>
+			<% if (declinedResults.length === 0) { %>
+				<h4>You don't have any declined tasks. Nice Work!</h4>
+			 <% } else { %>
+				<div class="row row-cols-1 row-cols-md-3 g-4">
+					<% declinedResults.forEach(function(data) { %>
+						<div class="col">
+							<div class="card">
+							  <div class="card-body">
+								<h5 class="card-title"><%= data.task_title %></h5>
+								<p class="card-text"><%= data.task_description %></p>
+								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+							  </div>
+							</div>
+						  </div>
+					<% }) %>
+				</div>
+			 <% } %><br><br></center>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+  </body>
 </html>

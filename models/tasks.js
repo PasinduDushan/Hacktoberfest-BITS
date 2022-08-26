@@ -1,0 +1,12 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+
+(taskSchema = new Schema({
+    task_id: Number,
+    task_title: String,
+    task_description: String,
+    task_category: String
+})),
+  (Task = mongoose.model("Task", taskSchema));
+
+module.exports = Task;

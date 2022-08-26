@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
+const userTasks = require("../models/userTasks")
 const Verification = require("../models/verification");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
@@ -8,10 +9,22 @@ const { google } = require("googleapis");
 const id = "1_s_E11Xn4DqW0BQ4lttvRzCcnc-PORbOrlSIWKnkv9k";
 
 router.get("/", (req, res, next) => {
-  return res.render("index.ejs");
+  return res.render("index.ejs")
+})
+
+router.get("/tasks", (req, res, next) => {
+  res.render("tasks.ejs")
+})
+
+router.get("/admin", (req, res, next) => {
+  res.redirect("/")
+})
+
+router.get("/signup", (req, res, next) => {
+  return res.render("signup.ejs");
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/signup", async (req, res, next) => {
   let personInfo = req.body;
 
   if (
@@ -173,14 +186,51 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.get("/profile", (req, res, next) => {
-  User.findOne({ unique_id: req.session.userId }, (err, data) => {
-    if (!data) {
-      res.redirect("/");
-    } else {
-      return res.render("data.ejs", { name: data.username, email: data.email });
-    }
+router.get("/profile", async(req, res, next) => {
+  //var taskDetails = { task_id: 100, task_title: "First Task", task_description: "This is the first task description" }
+
+  userTasks.findOne({ user_id: req.session.userId })
+    .then((task) => {
+      task.choosed_tasks.push({ task_title: "Third Task", task_description: "This is the description of the third task", task_id: 300, task_category: "CODING" });
+      task
+        .save()
+        .then(() => {
+          return "Success"
+        })
+        .catch(console.log)
+    })
+    .catch(console.log)
+
+    
+  const taskData = await userTasks.findOne({ user_id: req.session.userId })
+  const userData = await User.findOne({ unique_id: req.session.userId })
+  var choosedTasksArray = taskData.choosed_tasks
+  var approvedTasksArray = taskData.approved_tasks
+  var declinedTasksArray = taskData.declined_tasks
+  var pendingTasksArray = taskData.pending_tasks
+
+  const choosedResults = choosedTasksArray.map(function(data) {
+    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
   });
+
+  const approvedResults = approvedTasksArray.map(function(data) {
+    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  });
+
+  const declinedResults = declinedTasksArray.map(function(data) {
+    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  });
+
+  const pendingResults = pendingTasksArray.map(function(data) {
+    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  });
+
+  res.render('data', {
+    choosedResults: choosedResults,
+    approvedResults: approvedResults,
+    declinedResults: declinedResults,
+    pendingResults: pendingResults
+  })
 });
 
 router.get("/logout", (req, res, next) => {
