@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
   </head>
   <body>
-    <center><h1>Welcome Moderator, Start by adding more tasks?</h1></center><br>
+    <center><h1>Welcome Moderator, Start by adding and reviewing more tasks?</h1></center><br>
     <center><form id="mainform"class="needs-validation" method="POST" action="/addtask/success" novalidate>
         <div class="col-md-4">
           <label for="validationCustom01" class="form-label">Task Title</label>
@@ -17,10 +17,24 @@
           </div>
         </div><br>
         <div class="col-md-4">
-          <label for="validationCustom01" class="form-label">Nickname for long URL</label>
-          <input type="text" class="form-control" name="description" id="validationCustom01" placeholder="A Beautiful description for the beautiful task" maxlength="500" required>
+          <label for="validationCustom01" class="form-label">Small Description</label>
+          <input type="text" class="form-control" name="smalldescription" id="validationCustom01" placeholder="A Beautiful small description for the beautiful task" maxlength="100" required>
           <div class="invalid-feedback">
-            You must type a description for your task
+            You must type a small description for your task
+          </div>
+        </div><br>
+        <div class="col-md-4">
+          <label for="validationCustom01" class="form-label">Big Description</label>
+          <input type="text" class="form-control" name="bigdescription" id="validationCustom01" placeholder="A Beautiful big description for the beautiful task" maxlength="2000" required>
+          <div class="invalid-feedback">
+            You must type a big description for your task
+          </div>
+        </div><br>
+        <div class="col-md-4">
+          <label for="validationCustom01" class="form-label">Task Category</label>
+          <input type="text" class="form-control" name="category" id="validationCustom01" placeholder="The category of this task" maxlength="10" required>
+          <div class="invalid-feedback">
+            You must type the description of your task
           </div>
         </div><br>
         <div class="col-12" style="display: flex; justify-content: center;">
@@ -28,6 +42,26 @@
         </div><br>
       </form>
      </center>
+     <center><div class="row row-cols-1 row-cols-md-3 g-4">
+      <% taskData.forEach(function(data) { %>
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+            <h5 class="card-title"><%= data.task_title %></h5>
+            <p class="card-text"><%= data.task_description %></p>
+            <p class="card-text">SUBMITTED By: <%= data.username %></p>
+            <form action="/admin/task/approve/<%= data.task_id %>/<%= data.userid %>" method="POST">
+              <button type="submit" class="btn btn-primary">Approve Task</button>
+            </form><br>
+            <form action="/admin/task/decline/<%= data.task_id %>/<%= data.userid %>" method="POST">
+              <button type="submit" class="btn btn-danger">Decline Task</button>
+            </form>
+            </div>
+          </div>
+          </div>
+      <% }) %>
+      </center>
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
   </body>
 </html>

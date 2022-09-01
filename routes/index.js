@@ -22,10 +22,6 @@ router.get("/", (req, res, next) => {
   return res.render("index.ejs")
 })
 
-router.get("/tasks", (req, res, next) => {
-  res.render("tasks.ejs")
-})
-
 router.get("/signup", (req, res, next) => {
   return res.render("signup.ejs");
 });
@@ -175,10 +171,46 @@ router.get("/task/:id", (req, res, next) => {
       res.render("tasks", {
         id: data.task_id,
         title: data.task_title,
-        description: data.task_description
+        description: data.big_description
       })
     }
    })
+})
+
+router.post("/addtask/success", (req, res) => {
+  let c;
+  Tasks.findOne({}, (err, data) => {
+    if (data) {
+      c = data.task_id + 100;
+    } else {
+      c = 100;
+    }
+
+    let newTask = new Tasks({
+      task_id: c,
+      task_title: req.body.title,
+      task_description: req.body.smalldescription,
+      task_category: req.body.category,
+      big_description: req.body.bigdescription
+    })
+
+    newTask.save((err, Data) => {
+      if(err) {
+        console.log(err);
+      } else {
+        console.log("Successfully added records for tasks")
+      }
+    })
+
+    res.redirect("/admin")
+  })
+})
+
+router.get("/tasks", async(req, res, next) => {
+  const tasks = await Tasks.find()
+  res.render("taskdata", {
+    tasks: tasks
+  })
 })
 
 router.post("/task/choose/:id", isAuthenticated,async(req, res, next) => {
@@ -281,9 +313,55 @@ router.get("/admin", isAuthenticated, async(req, res, next) => {
   const userData = await User.findOne({ unique_id: req.session.userId })
 
   if(userData.adminUser){
-    res.render('admin')
+    const taskdata = await Admin.findOne({ number: 1 });
+    const tasks = taskdata.taskData;
+
+    const choosedResults = tasks.map(function(data) {
+      return { "username": data.username, "userid": data.userId, "task_title": data.task_title, "task_description": data.task_description, "task_id": data.task_id, "task_category": data.task_category }
+    });
+
+    res.render('admin', {
+      taskData: choosedResults
+    })
   } else {
     res.send("This is a restricted area. Please do not try to access this page.")
+  }
+});
+
+router.post("/admin/task/approve/:id/:user", isAuthenticated, async(req, res, next) => {
+  const userData = await User.findOne({ unique_id: req.params.user });
+  const task_dat = await Tasks.findOne({ task_id: req.params.id });
+  if(!userData || !task_dat){
+    res.sendStatus(404)
+  } else {
+    const taskData = await userTasks.findOne({ user_id: req.params.user })
+    const Admindata = await Admin.findOne({ number: 1 })
+
+    var pendingTasksArray = taskData.pending_tasks
+    var adminTasksArray = Admindata.taskData
+    const choosedResults = pendingTasksArray.map(function(data) {
+      return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+    });
+
+    const adminChoosedResults = adminTasksArray.map(function(data) {
+      return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+    });
+
+    userTasks.findOne({ user_id: req.params.user })
+      .then((task) => {
+        task.approved_tasks.push({ task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
+        task
+          .save()
+          .then(() => {
+            return "Success"
+          })
+          .catch(console.log)
+      })
+    .catch(console.log)
+
+    await userTasks.update({_id: taskData._id}, {$pull: { pending_tasks: {_id: choosedResults[0].id}}});
+    await Admin.update({_id: Admindata._id}, {$pull: { taskData: {_id: adminChoosedResults[0].id}}});
+    res.redirect("/admin")
   }
 })
 
@@ -328,7 +406,7 @@ router.post("/task/submit/:id", isAuthenticated, async(req, res, next) => {
 
     await userTasks.update({_id: taskData._id}, {$pull: { choosed_tasks: {_id: choosedResults[0].id}}});
 
-    res.sendStatus(200)
+    res.redirect("/profile")
 
     // console.log(taskData._id)
 

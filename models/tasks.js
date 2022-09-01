@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
     task_id: Number,
     task_title: String,
     task_description: String,
+    big_description: String,
     task_category: String
 })),
   (Task = mongoose.model("Task", taskSchema));
