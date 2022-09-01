@@ -179,11 +179,12 @@ router.get("/task/:id", (req, res, next) => {
 
 router.post("/addtask/success", (req, res) => {
   let c;
-  Tasks.findOne({}, (err, data) => {
-    if (data) {
-      c = data.task_id + 100;
+  Tasks.findOne({}, async(err, data) => {
+    if(data){
+      const taskdata = await Tasks.find().limit(1).sort({$natural:-1}) 
+      c = taskdata[0].task_id + 100
     } else {
-      c = 100;
+      c = 100
     }
 
     let newTask = new Tasks({
