@@ -12,6 +12,7 @@ const Schema = mongoose.Schema;
   competitor_id: String,
   password: String,
   passwordConf: String,
+  adminUser: Boolean,
   createdAt: {
     type: Date,
     default: Date.now,

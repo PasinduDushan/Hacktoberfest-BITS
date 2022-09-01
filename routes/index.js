@@ -1,12 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
-const userTasks = require("../models/userTasks")
+const userTasks = require("../models/userTasks");
+const Tasks = require("../models/tasks");
+const Admin = require("../models/admin");
 const Verification = require("../models/verification");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 
 const id = "1_s_E11Xn4DqW0BQ4lttvRzCcnc-PORbOrlSIWKnkv9k";
+
+const isAuthenticated = (req, res, next) => {
+  if(!req.session.userId){
+    res.redirect("/login")
+  } else {
+    next()
+  }
+}
 
 router.get("/", (req, res, next) => {
   return res.render("index.ejs")
@@ -14,10 +24,6 @@ router.get("/", (req, res, next) => {
 
 router.get("/tasks", (req, res, next) => {
   res.render("tasks.ejs")
-})
-
-router.get("/admin", (req, res, next) => {
-  res.redirect("/")
 })
 
 router.get("/signup", (req, res, next) => {
@@ -60,6 +66,7 @@ router.post("/signup", async (req, res, next) => {
               password: personInfo.password,
               passwordConf: personInfo.passwordConf,
               verified: false,
+              adminUser: false
             });
 
             let newVerification = new Verification({
@@ -67,6 +74,22 @@ router.post("/signup", async (req, res, next) => {
               verification_link: verification_link,
               verified: false,
             });
+
+            let newUserTasks = new userTasks({
+              user_id: c,
+              choosed_tasks: [],
+              pending_tasks: [],
+              approved_tasks: [],
+              declined_tasks: []
+            });
+
+            newUserTasks.save((err, Data) => {
+              if(err) {
+                console.log(err);
+              } else {
+                console.log("Successfully added records for user tasks")
+              }
+            })
 
             newVerification.save((err, Data) => {
               if (err) {
@@ -144,6 +167,42 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
+router.get("/task/:id", (req, res, next) => {
+   Tasks.findOne({ task_id: req.params.id }, (err, data) => {
+    if(!data){
+      res.send("No task was found with the given ID")
+    } else {
+      res.render("tasks", {
+        id: data.task_id,
+        title: data.task_title,
+        description: data.task_description
+      })
+    }
+   })
+})
+
+router.post("/task/choose/:id", isAuthenticated,async(req, res, next) => {
+  const task = await Tasks.findOne({ task_id: req.params.id });
+  if(!task){
+    res.sendStatus(404)
+  } else {
+    const taskData = await Tasks.findOne({ task_id: req.params.id })
+    userTasks.findOne({ user_id: req.session.userId })
+      .then((task) => {
+        task.choosed_tasks.push({ task_title: taskData.task_title, task_description: taskData.task_description, task_id: taskData.task_id, task_category: taskData.task_category });
+        task
+          .save()
+          .then(() => {
+            return "Success"
+          })
+          .catch(console.log)
+      })
+      .catch(console.log)
+
+    res.redirect('/profile')
+  }
+})
+
 router.get("/verification/:id", (req, res, next) => {
   Verification.findOne({ verification_link: req.params.id }, (err, data) => {
     if (!data.verified) {
@@ -186,22 +245,7 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.get("/profile", async(req, res, next) => {
-  //var taskDetails = { task_id: 100, task_title: "First Task", task_description: "This is the first task description" }
-
-  userTasks.findOne({ user_id: req.session.userId })
-    .then((task) => {
-      task.choosed_tasks.push({ task_title: "Third Task", task_description: "This is the description of the third task", task_id: 300, task_category: "CODING" });
-      task
-        .save()
-        .then(() => {
-          return "Success"
-        })
-        .catch(console.log)
-    })
-    .catch(console.log)
-
-    
+router.get("/profile", isAuthenticated, async(req, res, next) => {    
   const taskData = await userTasks.findOne({ user_id: req.session.userId })
   const userData = await User.findOne({ unique_id: req.session.userId })
   var choosedTasksArray = taskData.choosed_tasks
@@ -232,6 +276,65 @@ router.get("/profile", async(req, res, next) => {
     pendingResults: pendingResults
   })
 });
+
+router.get("/admin", isAuthenticated, async(req, res, next) => {
+  const userData = await User.findOne({ unique_id: req.session.userId })
+
+  if(userData.adminUser){
+    res.render('admin')
+  } else {
+    res.send("This is a restricted area. Please do not try to access this page.")
+  }
+})
+
+router.post("/task/submit/:id", isAuthenticated, async(req, res, next) => {
+  const userData = await userTasks.findOne({user_id: req.session.userId});
+  if(!userData){
+    return res.send("User does not exists in the database")
+  } else {
+    const taskData = await userTasks.findOne({ user_id: req.session.userId })
+    const task_dat = await Tasks.findOne({ task_id: req.params.id })
+    const user = await User.findOne({ unique_id: req.session.userId })
+
+    var choosedTasksArray = taskData.choosed_tasks
+    var pendingTasksArray = taskData.pending_tasks
+
+    const choosedResults = choosedTasksArray.map(function(data) {
+        return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+    });
+
+    userTasks.findOne({ user_id: req.session.userId })
+      .then((task) => {
+        task.pending_tasks.push({ task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
+        task
+          .save()
+          .then(() => {
+            return "Success"
+          })
+          .catch(console.log)
+      })
+    .catch(console.log)
+    Admin.findOne({ number: 1 })
+    .then((task) => {
+      task.taskData.push({ username: user.username, userId: user.unique_id, task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
+      task
+        .save()
+        .then(() => {
+          return "Success"
+        })
+        .catch(console.log)
+    })
+    .catch(console.log)
+
+    await userTasks.update({_id: taskData._id}, {$pull: { choosed_tasks: {_id: choosedResults[0].id}}});
+
+    res.sendStatus(200)
+
+    // console.log(taskData._id)
+
+    // console.log(choosedResults[0].id)
+  }
+})
 
 router.get("/logout", (req, res, next) => {
   if (req.session) {

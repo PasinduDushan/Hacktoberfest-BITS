@@ -19,6 +19,9 @@
 								<h5 class="card-title"><%= data.task_title %></h5>
 								<p class="card-text"><%= data.task_description %></p>
 								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+							  <form action="/task/submit/<%= data.task_id %>" method="post">
+								<button type="submit" class="btn btn-primary">Submit Task</button><br>
+							  </form>
 							  </div>
 							</div>
 						  </div>
