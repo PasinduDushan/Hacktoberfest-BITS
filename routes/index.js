@@ -391,6 +391,28 @@ router.post(
         { _id: Admindata._id },
         { $pull: { taskData: { _id: adminChoosedResults[0].id } } }
       );
+
+      async function main() {
+        let transporter = nodemailer.createTransport({
+          host: "smtp.mail.yahoo.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "pasindudushan07@yahoo.com",
+            pass: "sjrbeghvrlhorwnn",
+          },
+        });
+
+        let info = await transporter.sendMail({
+          from: '"BITS 22" <pasindudushan07@yahoo.com>',
+          to: userData.email,
+          subject: `Hello ${userData.username}`,
+          html: `<p>Your task with the ID <b>${req.params.id}</b> has been accepted and will be counted in the competition.<br><br>- Good Luck -<br>BITS Task Reviewing Commitee</p>`, // plain text body
+        });
+
+        console.log("Message sent: %s", info.messageId);
+      }
+      main().catch(console.error);
       res.redirect("/admin");
     }
   }
@@ -607,6 +629,10 @@ router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
     // console.log(choosedResults[0].id)
   }
 });
+
+router.get("/leaderboard", (req, res, next) => {
+  res.sendStatus(200)
+})
 
 router.get("/logout", (req, res, next) => {
   if (req.session) {
