@@ -11,7 +11,8 @@
 		<center><h2><u>Welcome back <%= userData.username %></u></h2></center><br>
 		<center><u><h2>Choosed Tasks</h2></u><br>
 			<% if (choosedResults.length === 0) { %>
-				<h4>You've not choosen any tasks</h4>
+				<h4>You've not choosen any tasks. Choose one <a class="btn btn-primary" href="/tasks" role="button">Go to Tasks</a><br>
+				</h4>
 			 <% } else { %>
 				<div class="row row-cols-1 row-cols-md-3 g-4">
 					<% choosedResults.forEach(function(data) { %>
@@ -20,7 +21,7 @@
 							  <div class="card-body">
 								<h5 class="card-title"><%= data.task_title %></h5>
 								<p class="card-text"><%= data.task_description %></p>
-								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
 							  <!-- <form action="/task/submit/<%= data.task_id %>" method="post"> -->
 								<button type="button" class="btn btn-primary" onclick="openForm()">Submit Task</button><br>
 							  <!-- </form> -->
