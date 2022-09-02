@@ -20,12 +20,10 @@
 							<div class="card">
 							  <div class="card-body">
 								<h5 class="card-title"><%= data.task_title %></h5>
-								<p class="card-text"><%= data.task_description %></p>
+								<p class="card-text"><%= data.task_description %></p> 
 								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
-							  <!-- <form action="/task/submit/<%= data.task_id %>" method="post"> -->
-								<button type="button" class="btn btn-primary" onclick="openForm()">Submit Task</button><br>
-							  <!-- </form> -->
-							  <div class="pop-up" id="myForm">
+								<button type="button" class="btn btn-primary" id="btn-id-<%= data.task_id %>" onclick="clickEventHandler(event)">Submit Task</button><br>
+								<div class="popup" id="popup-id-<%= data.task_id %>">
 								<form action="/task/submit/<%= data.task_id %>" method="post"><br>
 								  <div class="mb-3">
 									<label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
@@ -38,7 +36,7 @@
 									<div id="emailHelp" class="form-text">Please type any information you want to share with the task reviewer such as how they want to open and run the project.</div>
 								  </div>
 								  <button type="submit" class="btn btn-primary">Submit</button>
-								  <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+								  <button type="button" class="btn cancel" id="btn-id-<%= data.task_id %>" onclick="closeEventHandler(event)">Close</button>
 								</form>
 							  </div><br>
 							  </div>
@@ -94,26 +92,58 @@
 							  <div class="card-body">
 								<h5 class="card-title"><%= data.task_title %></h5>
 								<p class="card-text"><%= data.task_description %></p>
-								<p class="card-text">Reason: <%= data.denial_reason %></p>
+								<p class="card-text">Denial Reason: <%= data.denial_reason %></p>
 								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
-								<form action="/task/submit/<%= data.task_id %>" method="post">
-									<button type="submit" class="btn btn-primary">Re-Submit Task</button><br>
+								<button type="button" class="btn btn-primary" id="btn-id2-<%= data.task_id %>" onclick="clickEventHandler2(event)">Re-Submit Task</button><br>
+								<div class="popup" id="popup-id2-<%= data.task_id %>">
+								<form action="/task/resubmit/<%= data.task_id %>" method="post"><br>
+								  <div class="mb-3">
+									<label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
+									<input type="text" class="form-control" name="url" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+									<div id="emailHelp" class="form-text">Please type the URL of your uploaded project. It can be any URL that redirects to your created project</div>
+								  </div>
+								  <div class="mb-3">
+									<label for="exampleInputEmail1" class="form-label">Any extra information you would like to share?</label>
+									<input type="text" class="form-control" name="feedback" id="exampleInputEmail1" aria-describedby="emailHelp" value="None">
+									<div id="emailHelp" class="form-text">Please type any information you want to share with the task reviewer such as how they want to open and run the project.</div>
+								  </div>
+								  <div class="mb-3">
+									<label for="exampleInputEmail1" class="form-label">UUID</label>
+									<input type="text" class="form-control" name="uuid" id="exampleInputEmail1" aria-describedby="emailHelp" value="IOIHFOE$!#%4264276L427BI2L4762OI4762$&^@$^@$^@^124^26HI24H624^h24I6H2$i^H42i6H42I6HI@$^h42I6H2I4H6246iohoIHIOH" disabled>
+									<div id="emailHelp" class="form-text">Please ignore this field and submit</div>
+								  </div>
+								  <button type="submit" class="btn btn-primary">Submit</button>
+								  <button type="button" class="btn cancel" id="btn-id2-<%= data.task_id %>" onclick="closeEventHandler2(event)">Close</button>
 								</form>
+							  </div><br>
 							  </div>
 							</div>
 						  </div>
 					<% }) %>
+
 				</div>
 			 <% } %><br><br></center>
 
 	<script>
-		function openForm() {
-			document.getElementById("myForm").style.display = "block";
-		}
-				
-		function closeForm() {
-			document.getElementById("myForm").style.display = "none";
-		}
+	  const clickEventHandler = (event) => {
+        const id = "popup-id-"+event.target.id.split('-')[2];
+        document.getElementById(id).style.display="block"
+      }
+
+      const closeEventHandler = (event) => {
+        const id = "popup-id-"+event.target.id.split('-')[2];
+        document.getElementById(id).style.display="none"
+      }
+
+      const clickEventHandler2 = (event) => {
+        const id = "popup-id2-"+event.target.id.split('-')[2];
+        document.getElementById(id).style.display="block"
+      }
+
+      const closeEventHandler2 = (event) => {
+        const id = "popup-id2-"+event.target.id.split('-')[2];
+        document.getElementById(id).style.display="none"
+      }
 	</script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
   </body>

@@ -381,14 +381,7 @@ router.post(
         })
         .catch(console.log);
 
-      await userTasks.findOneAndUpdate(
-        { 
-          user_id: req.params.user
-        },
-        {
-          total_points: taskData.total_points + req.body.points
-        }
-      )
+      await userTasks.updateOne({ user_id: req.params.user }, [{ $set: { total_points: { $add: [ "$total_points", parseInt(req.body.points) ] } } }])
 
       await userTasks.update(
         { _id: taskData._id },
@@ -532,6 +525,79 @@ router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
     await userTasks.update(
       { _id: taskData._id },
       { $pull: { choosed_tasks: { _id: choosedResults[0].id } } }
+    );
+
+    res.redirect("/profile");
+
+    // console.log(taskData._id)
+
+    // console.log(choosedResults[0].id)
+  }
+});
+
+router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
+  const userData = await userTasks.findOne({ user_id: req.session.userId });
+  if (!userData) {
+    return res.send("User does not exists in the database");
+  } else {
+    const taskData = await userTasks.findOne({ user_id: req.session.userId });
+    const task_dat = await Tasks.findOne({ task_id: req.params.id });
+    const user = await User.findOne({ unique_id: req.session.userId });
+
+    var declinedTasksArray = taskData.declined_tasks;
+    var pendingTasksArray = taskData.pending_tasks;
+
+    const declinedResults = declinedTasksArray.map(function (data) {
+      return {
+        id: data._id,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+      };
+    });
+
+    userTasks
+      .findOne({ user_id: req.session.userId })
+      .then((task) => {
+        task.pending_tasks.push({
+          task_title: task_dat.task_title,
+          task_description: task_dat.task_description,
+          task_id: task_dat.task_id,
+          task_category: task_dat.task_category
+        });
+        task
+          .save()
+          .then(() => {
+            return "Success";
+          })
+          .catch(console.log);
+      })
+      .catch(console.log);
+    Admin.findOne({ number: 1 })
+      .then((task) => {
+        task.taskData.push({
+          username: user.username,
+          userId: user.unique_id,
+          task_title: task_dat.task_title,
+          task_description: task_dat.task_description,
+          task_id: task_dat.task_id,
+          task_category: task_dat.task_category,
+          project_url: req.body.url,
+          feedback: req.body.feedback
+        });
+        task
+          .save()
+          .then(() => {
+            return "Success";
+          })
+          .catch(console.log);
+      })
+      .catch(console.log);
+
+    await userTasks.update(
+      { _id: taskData._id },
+      { $pull: { declined_tasks: { _id: declinedResults[0].id } } }
     );
 
     res.redirect("/profile");
