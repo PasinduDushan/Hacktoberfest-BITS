@@ -4,23 +4,22 @@ const User = require("../models/user");
 const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
-const Verification = require("../models/verification");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 
 const id = "1_s_E11Xn4DqW0BQ4lttvRzCcnc-PORbOrlSIWKnkv9k";
 
 const isAuthenticated = (req, res, next) => {
-  if(!req.session.userId){
-    res.redirect("/login")
+  if (!req.session.userId) {
+    res.redirect("/login");
   } else {
-    next()
+    next();
   }
-}
+};
 
 router.get("/", (req, res, next) => {
-  return res.render("index.ejs")
-})
+  return res.render("index.ejs");
+});
 
 router.get("/signup", (req, res, next) => {
   return res.render("signup.ejs");
@@ -48,7 +47,6 @@ router.post("/signup", async (req, res, next) => {
               c = 1;
             }
 
-            let verification_link = uuid();
             let bits_id = com_id();
 
             let newPerson = new User({
@@ -61,37 +59,23 @@ router.post("/signup", async (req, res, next) => {
               competitor_id: "bits22-" + bits_id,
               password: personInfo.password,
               passwordConf: personInfo.passwordConf,
-              verified: false,
-              adminUser: false
-            });
-
-            let newVerification = new Verification({
-              unique_id: c,
-              verification_link: verification_link,
-              verified: false,
+              adminUser: false,
             });
 
             let newUserTasks = new userTasks({
               user_id: c,
+              total_points: 0,
               choosed_tasks: [],
               pending_tasks: [],
               approved_tasks: [],
-              declined_tasks: []
+              declined_tasks: [],
             });
 
             newUserTasks.save((err, Data) => {
-              if(err) {
-                console.log(err);
-              } else {
-                console.log("Successfully added records for user tasks")
-              }
-            })
-
-            newVerification.save((err, Data) => {
               if (err) {
                 console.log(err);
               } else {
-                console.log("Sucessfully added verification");
+                console.log("Successfully added records for user tasks");
               }
             });
 
@@ -141,7 +125,7 @@ router.post("/signup", async (req, res, next) => {
                     from: '"BITS 22" <pasindudushan07@yahoo.com>',
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
-                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct please click below link to verify your email</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul><br><b>Confirmation Link - http://localhost:3000/verification/${verification_link}`, // plain text body
+                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
                   });
 
                   console.log("Message sent: %s", info.messageId);
@@ -164,27 +148,27 @@ router.post("/signup", async (req, res, next) => {
 });
 
 router.get("/task/:id", (req, res, next) => {
-   Tasks.findOne({ task_id: req.params.id }, (err, data) => {
-    if(!data){
-      res.send("No task was found with the given ID")
+  Tasks.findOne({ task_id: req.params.id }, (err, data) => {
+    if (!data) {
+      res.send("No task was found with the given ID");
     } else {
       res.render("tasks", {
         id: data.task_id,
         title: data.task_title,
-        description: data.big_description
-      })
+        description: data.big_description,
+      });
     }
-   })
-})
+  });
+});
 
 router.post("/addtask/success", (req, res) => {
   let c;
-  Tasks.findOne({}, async(err, data) => {
-    if(data){
-      const taskdata = await Tasks.find().limit(1).sort({$natural:-1}) 
-      c = taskdata[0].task_id + 100
+  Tasks.findOne({}, async (err, data) => {
+    if (data) {
+      const taskdata = await Tasks.find().limit(1).sort({ $natural: -1 });
+      c = taskdata[0].task_id + 100;
     } else {
-      c = 100
+      c = 100;
     }
 
     let newTask = new Tasks({
@@ -192,71 +176,54 @@ router.post("/addtask/success", (req, res) => {
       task_title: req.body.title,
       task_description: req.body.smalldescription,
       task_category: req.body.category,
-      big_description: req.body.bigdescription
-    })
+      big_description: req.body.bigdescription,
+    });
 
     newTask.save((err, Data) => {
-      if(err) {
+      if (err) {
         console.log(err);
       } else {
-        console.log("Successfully added records for tasks")
+        console.log("Successfully added records for tasks");
       }
-    })
+    });
 
-    res.redirect("/admin")
-  })
-})
+    res.redirect("/admin");
+  });
+});
 
-router.get("/tasks", async(req, res, next) => {
-  const tasks = await Tasks.find()
+router.get("/tasks", async (req, res, next) => {
+  const tasks = await Tasks.find();
   res.render("taskdata", {
-    tasks: tasks
-  })
-})
+    tasks: tasks,
+  });
+});
 
-router.post("/task/choose/:id", isAuthenticated,async(req, res, next) => {
+router.post("/task/choose/:id", isAuthenticated, async (req, res, next) => {
   const task = await Tasks.findOne({ task_id: req.params.id });
-  if(!task){
-    res.sendStatus(404)
+  if (!task) {
+    res.sendStatus(404);
   } else {
-    const taskData = await Tasks.findOne({ task_id: req.params.id })
-    userTasks.findOne({ user_id: req.session.userId })
+    const taskData = await Tasks.findOne({ task_id: req.params.id });
+    userTasks
+      .findOne({ user_id: req.session.userId })
       .then((task) => {
-        task.choosed_tasks.push({ task_title: taskData.task_title, task_description: taskData.task_description, task_id: taskData.task_id, task_category: taskData.task_category });
+        task.choosed_tasks.push({
+          task_title: taskData.task_title,
+          task_description: taskData.task_description,
+          task_id: taskData.task_id,
+          task_category: taskData.task_category,
+        });
         task
           .save()
           .then(() => {
-            return "Success"
+            return "Success";
           })
-          .catch(console.log)
+          .catch(console.log);
       })
-      .catch(console.log)
+      .catch(console.log);
 
-    res.redirect('/profile')
+    res.redirect("/profile");
   }
-})
-
-router.get("/verification/:id", (req, res, next) => {
-  Verification.findOne({ verification_link: req.params.id }, (err, data) => {
-    if (!data.verified) {
-      data.verified = true;
-
-      data.save((err, Person) => {
-        if (err) console.log(err);
-        else res.send("This email is successfully verified");
-      });
-
-      User.findOne({ unique_id: data.unique_id }, (err, Person) => {
-        Person.verified = true;
-
-        Person.save((err, Person) => {
-          if (err) console.log(err);
-        });
-      });
-    } else {
-      res.send("This email is already verified");
-    }
-  });
 });
 
 router.get("/login", (req, res, next) => {
@@ -278,142 +245,302 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.get("/profile", isAuthenticated, async(req, res, next) => {    
-  const taskData = await userTasks.findOne({ user_id: req.session.userId })
-  const userData = await User.findOne({ unique_id: req.session.userId })
-  var choosedTasksArray = taskData.choosed_tasks
-  var approvedTasksArray = taskData.approved_tasks
-  var declinedTasksArray = taskData.declined_tasks
-  var pendingTasksArray = taskData.pending_tasks
+router.get("/profile", isAuthenticated, async (req, res, next) => {
+  const taskData = await userTasks.findOne({ user_id: req.session.userId });
+  const userData = await User.findOne({ unique_id: req.session.userId });
+  var choosedTasksArray = taskData.choosed_tasks;
+  var approvedTasksArray = taskData.approved_tasks;
+  var declinedTasksArray = taskData.declined_tasks;
+  var pendingTasksArray = taskData.pending_tasks;
 
-  const choosedResults = choosedTasksArray.map(function(data) {
-    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  const choosedResults = choosedTasksArray.map(function (data) {
+    return {
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
   });
 
-  const approvedResults = approvedTasksArray.map(function(data) {
-    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  const approvedResults = approvedTasksArray.map(function (data) {
+    return {
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
   });
 
-  const declinedResults = declinedTasksArray.map(function(data) {
-    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  const declinedResults = declinedTasksArray.map(function (data) {
+    return {
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+      denial_reason: data.denial_reason
+    };
   });
 
-  const pendingResults = pendingTasksArray.map(function(data) {
-    return { "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
+  const pendingResults = pendingTasksArray.map(function (data) {
+    return {
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
   });
 
-  res.render('data', {
+  res.render("data", {
     choosedResults: choosedResults,
     approvedResults: approvedResults,
     declinedResults: declinedResults,
-    pendingResults: pendingResults
-  })
+    pendingResults: pendingResults,
+    userData: userData
+  });
 });
 
-router.get("/admin", isAuthenticated, async(req, res, next) => {
-  const userData = await User.findOne({ unique_id: req.session.userId })
+router.get("/admin", isAuthenticated, async (req, res, next) => {
+  const userData = await User.findOne({ unique_id: req.session.userId });
 
-  if(userData.adminUser){
+  if (userData.adminUser) {
     const taskdata = await Admin.findOne({ number: 1 });
     const tasks = taskdata.taskData;
 
-    const choosedResults = tasks.map(function(data) {
-      return { "username": data.username, "userid": data.userId, "task_title": data.task_title, "task_description": data.task_description, "task_id": data.task_id, "task_category": data.task_category }
+    const choosedResults = tasks.map(function (data) {
+      return {
+        username: data.username,
+        userid: data.userId,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+        project_url: data.project_url,
+        feedback: data.feedback
+      };
     });
 
-    res.render('admin', {
-      taskData: choosedResults
-    })
+    res.render("admin", {
+      taskData: choosedResults,
+    });
   } else {
-    res.send("This is a restricted area. Please do not try to access this page.")
+    res.send(
+      "This is a restricted area. Please do not try to access this page."
+    );
   }
 });
 
-router.post("/admin/task/approve/:id/:user", isAuthenticated, async(req, res, next) => {
-  const userData = await User.findOne({ unique_id: req.params.user });
-  const task_dat = await Tasks.findOne({ task_id: req.params.id });
-  if(!userData || !task_dat){
-    res.sendStatus(404)
-  } else {
-    const taskData = await userTasks.findOne({ user_id: req.params.user })
-    const Admindata = await Admin.findOne({ number: 1 })
+router.post(
+  "/admin/task/approve/:id/:user",
+  isAuthenticated,
+  async (req, res, next) => {
+    const userData = await User.findOne({ unique_id: req.params.user });
+    const task_dat = await Tasks.findOne({ task_id: req.params.id });
+    if (!userData || !task_dat) {
+      res.sendStatus(404);
+    } else {
+      const taskData = await userTasks.findOne({ user_id: req.params.user });
+      const Admindata = await Admin.findOne({ number: 1 });
 
-    var pendingTasksArray = taskData.pending_tasks
-    var adminTasksArray = Admindata.taskData
-    const choosedResults = pendingTasksArray.map(function(data) {
-      return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
-    });
+      var pendingTasksArray = taskData.pending_tasks;
+      var adminTasksArray = Admindata.taskData;
+      const choosedResults = pendingTasksArray.map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
 
-    const adminChoosedResults = adminTasksArray.map(function(data) {
-      return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
-    });
+      const adminChoosedResults = adminTasksArray.map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
 
-    userTasks.findOne({ user_id: req.params.user })
-      .then((task) => {
-        task.approved_tasks.push({ task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
-        task
-          .save()
-          .then(() => {
-            return "Success"
-          })
-          .catch(console.log)
-      })
-    .catch(console.log)
-
-    await userTasks.update({_id: taskData._id}, {$pull: { pending_tasks: {_id: choosedResults[0].id}}});
-    await Admin.update({_id: Admindata._id}, {$pull: { taskData: {_id: adminChoosedResults[0].id}}});
-    res.redirect("/admin")
-  }
-})
-
-router.post("/task/submit/:id", isAuthenticated, async(req, res, next) => {
-  const userData = await userTasks.findOne({user_id: req.session.userId});
-  if(!userData){
-    return res.send("User does not exists in the database")
-  } else {
-    const taskData = await userTasks.findOne({ user_id: req.session.userId })
-    const task_dat = await Tasks.findOne({ task_id: req.params.id })
-    const user = await User.findOne({ unique_id: req.session.userId })
-
-    var choosedTasksArray = taskData.choosed_tasks
-    var pendingTasksArray = taskData.pending_tasks
-
-    const choosedResults = choosedTasksArray.map(function(data) {
-        return { "id": data._id, "task_title": data.task_title, "task_description": data.task_description, task_id: data.task_id, task_category: data.task_category }
-    });
-
-    userTasks.findOne({ user_id: req.session.userId })
-      .then((task) => {
-        task.pending_tasks.push({ task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
-        task
-          .save()
-          .then(() => {
-            return "Success"
-          })
-          .catch(console.log)
-      })
-    .catch(console.log)
-    Admin.findOne({ number: 1 })
-    .then((task) => {
-      task.taskData.push({ username: user.username, userId: user.unique_id, task_title: task_dat.task_title, task_description: task_dat.task_description, task_id: task_dat.task_id, task_category: task_dat.task_category });
-      task
-        .save()
-        .then(() => {
-          return "Success"
+      userTasks
+        .findOne({ user_id: req.params.user })
+        .then((task) => {
+          task.approved_tasks.push({
+            task_title: task_dat.task_title,
+            task_description: task_dat.task_description,
+            task_id: task_dat.task_id,
+            task_category: task_dat.task_category,
+          });
+          task
+            .save()
+            .then(() => {
+              return "Success";
+            })
+            .catch(console.log);
         })
-        .catch(console.log)
-    })
-    .catch(console.log)
+        .catch(console.log);
 
-    await userTasks.update({_id: taskData._id}, {$pull: { choosed_tasks: {_id: choosedResults[0].id}}});
+      await userTasks.findOneAndUpdate(
+        { 
+          user_id: req.params.user
+        },
+        {
+          total_points: taskData.total_points + req.body.points
+        }
+      )
 
-    res.redirect("/profile")
+      await userTasks.update(
+        { _id: taskData._id },
+        { $pull: { pending_tasks: { _id: choosedResults[0].id } } }
+      );
+      await Admin.update(
+        { _id: Admindata._id },
+        { $pull: { taskData: { _id: adminChoosedResults[0].id } } }
+      );
+      res.redirect("/admin");
+    }
+  }
+);
+
+router.post(
+  "/admin/task/decline/:id/:user",
+  isAuthenticated,
+  async (req, res, next) => {
+    const userData = await User.findOne({ unique_id: req.params.user });
+    const task_dat = await Tasks.findOne({ task_id: req.params.id });
+    if (!userData || !task_dat) {
+      res.sendStatus(404);
+    } else {
+      const taskData = await userTasks.findOne({ user_id: req.params.user });
+      const Admindata = await Admin.findOne({ number: 1 });
+
+      var pendingTasksArray = taskData.pending_tasks;
+      var adminTasksArray = Admindata.taskData;
+      const choosedResults = pendingTasksArray.map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
+
+      const adminChoosedResults = adminTasksArray.map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
+
+      userTasks
+        .findOne({ user_id: req.params.user })
+        .then((task) => {
+          task.declined_tasks.push({
+            task_title: task_dat.task_title,
+            task_description: task_dat.task_description,
+            task_id: task_dat.task_id,
+            task_category: task_dat.task_category,
+            denial_reason: req.body.denialreason
+          });
+          task
+            .save()
+            .then(() => {
+              return "Success";
+            })
+            .catch(console.log);
+        })
+        .catch(console.log);
+
+      await userTasks.update(
+        { _id: taskData._id },
+        { $pull: { pending_tasks: { _id: choosedResults[0].id } } }
+      );
+      await Admin.update(
+        { _id: Admindata._id },
+        { $pull: { taskData: { _id: adminChoosedResults[0].id } } }
+      );
+      res.redirect("/admin");
+    }
+  }
+);
+
+router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
+  const userData = await userTasks.findOne({ user_id: req.session.userId });
+  if (!userData) {
+    return res.send("User does not exists in the database");
+  } else {
+    const taskData = await userTasks.findOne({ user_id: req.session.userId });
+    const task_dat = await Tasks.findOne({ task_id: req.params.id });
+    const user = await User.findOne({ unique_id: req.session.userId });
+
+    var choosedTasksArray = taskData.choosed_tasks;
+    var pendingTasksArray = taskData.pending_tasks;
+
+    const choosedResults = choosedTasksArray.map(function (data) {
+      return {
+        id: data._id,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+      };
+    });
+
+    userTasks
+      .findOne({ user_id: req.session.userId })
+      .then((task) => {
+        task.pending_tasks.push({
+          task_title: task_dat.task_title,
+          task_description: task_dat.task_description,
+          task_id: task_dat.task_id,
+          task_category: task_dat.task_category
+        });
+        task
+          .save()
+          .then(() => {
+            return "Success";
+          })
+          .catch(console.log);
+      })
+      .catch(console.log);
+    Admin.findOne({ number: 1 })
+      .then((task) => {
+        task.taskData.push({
+          username: user.username,
+          userId: user.unique_id,
+          task_title: task_dat.task_title,
+          task_description: task_dat.task_description,
+          task_id: task_dat.task_id,
+          task_category: task_dat.task_category,
+          project_url: req.body.url,
+          feedback: req.body.feedback
+        });
+        task
+          .save()
+          .then(() => {
+            return "Success";
+          })
+          .catch(console.log);
+      })
+      .catch(console.log);
+
+    await userTasks.update(
+      { _id: taskData._id },
+      { $pull: { choosed_tasks: { _id: choosedResults[0].id } } }
+    );
+
+    res.redirect("/profile");
 
     // console.log(taskData._id)
 
     // console.log(choosedResults[0].id)
   }
-})
+});
 
 router.get("/logout", (req, res, next) => {
   if (req.session) {
