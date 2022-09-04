@@ -6,6 +6,8 @@ const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
+const jwt = require('jsonwebtoken');
+const hash = require('crypto').randomBytes(64).toString('hex');
 
 const id = "1_s_E11Xn4DqW0BQ4lttvRzCcnc-PORbOrlSIWKnkv9k";
 
@@ -57,6 +59,7 @@ router.post("/signup", async (req, res, next) => {
               fullname: personInfo.fullname,
               age: personInfo.age,
               competitor_id: "bits22-" + bits_id,
+              grade: personInfo.grade,
               password: personInfo.password,
               passwordConf: personInfo.passwordConf,
               adminUser: false,
@@ -234,6 +237,10 @@ router.post("/login", (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, data) => {
     if (data) {
       if (data.password == req.body.password) {
+        if(data.adminUser){
+          const token = generateAccessToken({ username: req.body.username });
+          console.log(token);
+        }
         req.session.userId = data.unique_id;
         res.send({ Success: "Success!" });
       } else {
@@ -299,7 +306,7 @@ router.get("/profile", isAuthenticated, async (req, res, next) => {
   });
 });
 
-router.get("/admin", isAuthenticated, async (req, res, next) => {
+router.get("/admin", isAuthenticated, authenticateToken, async (req, res, next) => {
   const userData = await User.findOne({ unique_id: req.session.userId });
 
   if (userData.adminUser) {
@@ -479,6 +486,29 @@ router.post(
         { _id: Admindata._id },
         { $pull: { taskData: { _id: adminChoosedResults[0].id } } }
       );
+
+      async function main() {
+        let transporter = nodemailer.createTransport({
+          host: "smtp.mail.yahoo.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "pasindudushan07@yahoo.com",
+            pass: "sjrbeghvrlhorwnn",
+          },
+        });
+
+        let info = await transporter.sendMail({
+          from: '"BITS 22" <pasindudushan07@yahoo.com>',
+          to: userData.email,
+          subject: `Hello ${userData.username}`,
+          html: `<p>Your task with the ID <b>${req.params.id}</b> has been rejected for the following reason. Please fix the issue specified below and then re-submit your task.<br><b>Reason: ${req.body.denialreason}</b><br><br>- Good Luck -<br>BITS Task Reviewing Commitee</p>`, // plain text body
+        });
+
+        console.log("Message sent: %s", info.messageId);
+      }
+      main().catch(console.error);
+
       res.redirect("/admin");
     }
   }
@@ -630,8 +660,32 @@ router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.get("/leaderboard", (req, res, next) => {
-  res.sendStatus(200)
+router.get("/leaderboard", async(req, res, next) => {
+  const Database = await userTasks.aggregate([{$lookup:
+    {
+          from: "users",
+          localField: "user_id",
+          foreignField: "unique_id",
+          as: "same"
+      }
+     },
+     {
+        $match: { "same": { $ne: [] } }
+     },
+     {
+        $sort: { "total_points": -1 }
+     }
+  ])
+
+  Database.forEach((data) => {
+    console.log(`${data.same[0].username} : ${data.total_points}`)
+  })
+
+
+  res.render("leaderboard", {
+    db: Database,
+    i: 1
+  })
 })
 
 router.get("/logout", (req, res, next) => {
@@ -701,5 +755,26 @@ const authentication = async () => {
   });
   return { sheets };
 };
+
+const generateAccessToken = (username) => {
+  return jwt.sign(username, hash, { expiresIn: '86400s' });
+}
+
+// function authenticateToken(req, res, next) {
+//   const authHeader = req.headers['authorization']
+//   const token = authHeader && authHeader.split(' ')[1]
+
+//   if (token == null) return res.sendStatus(401)
+
+//   jwt.verify(token, hash (err, user) => {
+//     console.log(err)
+
+//     if (err) return res.sendStatus(403)
+
+//     req.user = user
+
+//     next()
+//   })
+// }
 
 module.exports = router;

@@ -28,6 +28,9 @@ app.use(
     store: new MongoStore({
       mongooseConnection: db,
     }),
+    cookie: {
+      maxAge: 1 * 24 * 60 * 60 * 1000
+    }
   })
 );
 

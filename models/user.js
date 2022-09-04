@@ -9,6 +9,7 @@ const Schema = mongoose.Schema;
   fullname: String,
   age: Number,
   competitor_id: String,
+  grade: String,
   password: String,
   passwordConf: String,
   adminUser: Boolean,
