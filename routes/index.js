@@ -6,10 +6,10 @@ const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
-const jwt = require('jsonwebtoken');
 const hash = require('crypto').randomBytes(64).toString('hex');
+require("dotenv").config();
 
-const id = "1_s_E11Xn4DqW0BQ4lttvRzCcnc-PORbOrlSIWKnkv9k";
+const id = "16pFG1D9Qq1Q4mb-rHz-cXYVRZdUABHC1JQVnMG5jWvs";
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -18,6 +18,18 @@ const isAuthenticated = (req, res, next) => {
     next();
   }
 };
+
+const isAdmin = (req, res, next) => {
+  if(!req.session.adminToken){
+    return res.json({ "code": 403, "message": "Unauthorized" })
+  }
+  if(req.session.adminToken !== process.env.TOKEN){
+    res.json({ "code": 400, "message": "Invalid trust token" })
+  } else {
+    next();
+  }
+
+}
 
 router.get("/", (req, res, next) => {
   return res.render("index.ejs");
@@ -85,7 +97,7 @@ router.post("/signup", async (req, res, next) => {
             (async () => {
               try {
                 const { sheets } = await authentication();
-                const { fullname, email, school, age } = req.body;
+                const { fullname, email, school, grade, age } = req.body;
 
                 const writeReq = await sheets.spreadsheets.values.append({
                   spreadsheetId: id,
@@ -93,7 +105,7 @@ router.post("/signup", async (req, res, next) => {
                   valueInputOption: "USER_ENTERED",
                   resource: {
                     values: [
-                      [fullname, email, age, school, "bits22-" + bits_id],
+                      [fullname, email, age, school, grade, "bits22-" + bits_id],
                     ],
                   },
                 });
@@ -128,7 +140,7 @@ router.post("/signup", async (req, res, next) => {
                     from: '"BITS 22" <pasindudushan07@yahoo.com>',
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
-                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
+                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
                   });
 
                   console.log("Message sent: %s", info.messageId);
@@ -164,7 +176,7 @@ router.get("/task/:id", (req, res, next) => {
   });
 });
 
-router.post("/addtask/success", (req, res) => {
+router.post("/addtask/success", isAuthenticated, isAdmin, async(req, res) => {
   let c;
   Tasks.findOne({}, async (err, data) => {
     if (data) {
@@ -238,8 +250,7 @@ router.post("/login", (req, res, next) => {
     if (data) {
       if (data.password == req.body.password) {
         if(data.adminUser){
-          const token = generateAccessToken({ username: req.body.username });
-          console.log(token);
+          req.session.adminToken = process.env.TOKEN
         }
         req.session.userId = data.unique_id;
         res.send({ Success: "Success!" });
@@ -306,7 +317,7 @@ router.get("/profile", isAuthenticated, async (req, res, next) => {
   });
 });
 
-router.get("/admin", isAuthenticated, authenticateToken, async (req, res, next) => {
+router.get("/admin", isAuthenticated, isAdmin,async (req, res, next) => {
   const userData = await User.findOne({ unique_id: req.session.userId });
 
   if (userData.adminUser) {
@@ -338,7 +349,7 @@ router.get("/admin", isAuthenticated, authenticateToken, async (req, res, next) 
 
 router.post(
   "/admin/task/approve/:id/:user",
-  isAuthenticated,
+  isAuthenticated, isAdmin,
   async (req, res, next) => {
     const userData = await User.findOne({ unique_id: req.params.user });
     const task_dat = await Tasks.findOne({ task_id: req.params.id });
@@ -427,7 +438,7 @@ router.post(
 
 router.post(
   "/admin/task/decline/:id/:user",
-  isAuthenticated,
+  isAuthenticated, isAdmin,
   async (req, res, next) => {
     const userData = await User.findOne({ unique_id: req.params.user });
     const task_dat = await Tasks.findOne({ task_id: req.params.id });
@@ -755,26 +766,5 @@ const authentication = async () => {
   });
   return { sheets };
 };
-
-const generateAccessToken = (username) => {
-  return jwt.sign(username, hash, { expiresIn: '86400s' });
-}
-
-// function authenticateToken(req, res, next) {
-//   const authHeader = req.headers['authorization']
-//   const token = authHeader && authHeader.split(' ')[1]
-
-//   if (token == null) return res.sendStatus(401)
-
-//   jwt.verify(token, hash (err, user) => {
-//     console.log(err)
-
-//     if (err) return res.sendStatus(403)
-
-//     req.user = user
-
-//     next()
-//   })
-// }
 
 module.exports = router;
