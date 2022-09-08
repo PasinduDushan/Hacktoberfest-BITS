@@ -35,15 +35,15 @@
           <label for="validationCustom01" class="form-label">Task Category</label>
           <input type="text" class="form-control" name="category" id="validationCustom01" placeholder="The category of this task" maxlength="10" required>
           <div class="invalid-feedback">
-            You must type the description of your task
+            You must type the category of your task
           </div>
         </div><br>
         <div class="col-12" style="display: flex; justify-content: center;">
           <button type="submit" class="btn btn-primary">Create</button>
         </div><br>
       </form>
-     </center>
-     <center><div class="row row-cols-1 row-cols-md-3 g-4">
+     </center><br><br>
+     <!-- <center><div class="row row-cols-1 row-cols-md-3 g-4">
       <% taskData.forEach(function(data) { %>
         <div class="col">
           <div class="card">
@@ -90,7 +90,8 @@
           </div>
       <% }) %>
       </center>
-    </div>
+    </div> -->
+    <center><a class="btn btn-primary" href="/admin/tasks/coding" role="button">Coding Tasks</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" href="/admin/tasks/design" role="button">Design Tasks</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" href="/admin/tasks/explore" role="button">Explore Tasks</a></center>
     <script>
 
       const clickEventHandler = (event) => {

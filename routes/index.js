@@ -525,6 +525,94 @@ router.post(
   }
 );
 
+router.get("/admin/tasks/coding", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Admin.findOne({ number: 1 })
+  const tasks = data.taskData;
+
+  const codingTasksArray = tasks.filter(function (data) {
+    return data.task_category === "CODING";
+  }).map(function (data) {
+    return {
+      id: data._id,
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
+  });
+
+  res.render("coding", {
+    codingTasksArray: codingTasksArray
+  })
+});
+
+router.get("/admin/tasks/design", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Admin.findOne({ number: 1 })
+  const tasks = data.taskData;
+
+  const designTasksArray = tasks.filter(function (data) {
+    return data.task_category === "DESIGN";
+  }).map(function (data) {
+    return {
+      id: data._id,
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
+  });
+
+  res.render("design", {
+    designTasksArray: designTasksArray
+  });
+});
+
+router.get("/admin/tasks/explore", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Admin.findOne({ number: 1 })
+  const tasks = data.taskData;
+
+  const exploreTasksArray = tasks.filter(function (data) {
+    return data.task_category === "EXPLORE";
+  }).map(function (data) {
+    return {
+      id: data._id,
+      task_title: data.task_title,
+      task_description: data.task_description,
+      task_id: data.task_id,
+      task_category: data.task_category,
+    };
+  });
+
+  res.render("explore", {
+    exploreTasksArray: exploreTasksArray
+  });
+});
+
+router.get("/admin/tasks/coding/:id", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Tasks.findOne({ task_id: req.params.id });
+  const tasks = await Admin.findOne({ number: 1 })
+  if(data){
+    const codingTasksArray = tasks.filter(function (data) {
+      return data.task_category === "CODING";
+    }).map(function (data) {
+      return {
+        username: data.username,
+        userid: data.userId,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+        project_url: data.project_url,
+        feedback: data.feedback
+      };
+    });
+
+    res.render("codingpage", {
+      codingTasksArray: codingTasksArray
+    });
+  }
+})
+
 router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
   if (!userData) {
