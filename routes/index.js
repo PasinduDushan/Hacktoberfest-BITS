@@ -590,10 +590,11 @@ router.get("/admin/tasks/explore", isAuthenticated, isAdmin, async(req, res, nex
 
 router.get("/admin/tasks/coding/:id", isAuthenticated, isAdmin, async(req, res, next) => {
   const data = await Tasks.findOne({ task_id: req.params.id });
-  const tasks = await Admin.findOne({ number: 1 })
+  const admin = await Admin.findOne({ number: 1 })
+  const tasks = admin.taskData
   if(data){
     const codingTasksArray = tasks.filter(function (data) {
-      return data.task_category === "CODING";
+      return data.task_id === parseInt(req.params.id);
     }).map(function (data) {
       return {
         username: data.username,
@@ -610,8 +611,66 @@ router.get("/admin/tasks/coding/:id", isAuthenticated, isAdmin, async(req, res, 
     res.render("codingpage", {
       codingTasksArray: codingTasksArray
     });
+  } else {
+    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
   }
-})
+});
+
+router.get("/admin/tasks/design/:id", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Tasks.findOne({ task_id: req.params.id });
+  const admin = await Admin.findOne({ number: 1 })
+  const tasks = admin.taskData
+  if(data){
+    const designTasksArray = tasks.filter(function (data) {
+      return data.task_id === parseInt(req.params.id);
+    }).map(function (data) {
+      return {
+        username: data.username,
+        userid: data.userId,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+        project_url: data.project_url,
+        feedback: data.feedback
+      };
+    });
+
+    res.render("designpage", {
+      designTasksArray: designTasksArray
+    });
+  } else {
+    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
+  }
+});
+
+router.get("/admin/tasks/explore/:id", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await Tasks.findOne({ task_id: req.params.id });
+  const admin = await Admin.findOne({ number: 1 })
+  const tasks = admin.taskData
+  if(data){
+    const exploreTasksArray = tasks.filter(function (data) {
+      return data.task_id === parseInt(req.params.id);
+    }).map(function (data) {
+      return {
+        username: data.username,
+        userid: data.userId,
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+        project_url: data.project_url,
+        feedback: data.feedback
+      };
+    });
+
+    res.render("explorepage", {
+      exploreTasksArray: exploreTasksArray
+    });
+  } else {
+    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
+  }
+});
 
 router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });

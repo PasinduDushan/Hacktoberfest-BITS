@@ -23,7 +23,7 @@
 								<p class="card-text"><%= data.task_description %></p> 
 								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
 								<button type="button" class="btn btn-primary" id="btn-id-<%= data.task_id %>" onclick="clickEventHandler(event)">Submit Task</button><br>
-								<div class="popup" id="popup-id-<%= data.task_id %>">
+								<div class="popup" id="popup-id-<%= data.task_id %>" style="display: none;">
 								<form action="/task/submit/<%= data.task_id %>" method="post"><br>
 								  <div class="mb-3">
 									<label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
@@ -95,7 +95,7 @@
 								<p class="card-text">Denial Reason: <%= data.denial_reason %></p>
 								<a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
 								<button type="button" class="btn btn-primary" id="btn-id2-<%= data.task_id %>" onclick="clickEventHandler2(event)">Re-Submit Task</button><br>
-								<div class="popup" id="popup-id2-<%= data.task_id %>">
+								<div class="popup" id="popup-id2-<%= data.task_id %>" style="display: none;">
 								<form action="/task/resubmit/<%= data.task_id %>" method="post"><br>
 								  <div class="mb-3">
 									<label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
