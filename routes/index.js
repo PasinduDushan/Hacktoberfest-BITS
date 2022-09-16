@@ -4,12 +4,15 @@ const User = require("../models/user");
 const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
+const Tests = require("../models/tests");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
-const hash = require('crypto').randomBytes(64).toString('hex');
+const multer = require("multer");
+const hash = require("crypto").randomBytes(64).toString("hex");
 require("dotenv").config();
 
 const id = "16pFG1D9Qq1Q4mb-rHz-cXYVRZdUABHC1JQVnMG5jWvs";
+const upload = multer();
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -20,16 +23,15 @@ const isAuthenticated = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-  if(!req.session.adminToken){
-    return res.json({ "code": 403, "message": "Unauthorized" })
+  if (!req.session.adminToken) {
+    return res.json({ code: 403, message: "Unauthorized" });
   }
-  if(req.session.adminToken !== process.env.TOKEN){
-    res.json({ "code": 400, "message": "Invalid trust token" })
+  if (req.session.adminToken !== process.env.TOKEN) {
+    res.json({ code: 400, message: "Invalid trust token" });
   } else {
     next();
   }
-
-}
+};
 
 router.get("/", (req, res, next) => {
   return res.render("index.ejs");
@@ -105,7 +107,14 @@ router.post("/signup", async (req, res, next) => {
                   valueInputOption: "USER_ENTERED",
                   resource: {
                     values: [
-                      [fullname, email, age, school, grade, "bits22-" + bits_id],
+                      [
+                        fullname,
+                        email,
+                        age,
+                        school,
+                        grade,
+                        "bits22-" + bits_id,
+                      ],
                     ],
                   },
                 });
@@ -176,7 +185,7 @@ router.get("/task/:id", (req, res, next) => {
   });
 });
 
-router.post("/addtask/success", isAuthenticated, isAdmin, async(req, res) => {
+router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
   let c;
   Tasks.findOne({}, async (err, data) => {
     if (data) {
@@ -210,6 +219,15 @@ router.get("/tasks", async (req, res, next) => {
   const tasks = await Tasks.find();
   res.render("taskdata", {
     tasks: tasks,
+  });
+});
+
+router.get("/onlinetest", isAuthenticated, async (req, res, next) => {
+  const user_data = await User.findOne({ unique_id: req.session.userId });
+  const test_data = await Tests.find({ test_grade: user_data.grade });
+  res.render("onlinetests", {
+    user_date: user_data,
+    test_data: test_data,
   });
 });
 
@@ -249,8 +267,8 @@ router.post("/login", (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, data) => {
     if (data) {
       if (data.password == req.body.password) {
-        if(data.adminUser){
-          req.session.adminToken = process.env.TOKEN
+        if (data.adminUser) {
+          req.session.adminToken = process.env.TOKEN;
         }
         req.session.userId = data.unique_id;
         res.send({ Success: "Success!" });
@@ -295,7 +313,7 @@ router.get("/profile", isAuthenticated, async (req, res, next) => {
       task_description: data.task_description,
       task_id: data.task_id,
       task_category: data.task_category,
-      denial_reason: data.denial_reason
+      denial_reason: data.denial_reason,
     };
   });
 
@@ -313,11 +331,11 @@ router.get("/profile", isAuthenticated, async (req, res, next) => {
     approvedResults: approvedResults,
     declinedResults: declinedResults,
     pendingResults: pendingResults,
-    userData: userData
+    userData: userData,
   });
 });
 
-router.get("/admin", isAuthenticated, isAdmin,async (req, res, next) => {
+router.get("/admin", isAuthenticated, isAdmin, async (req, res, next) => {
   const userData = await User.findOne({ unique_id: req.session.userId });
 
   if (userData.adminUser) {
@@ -333,7 +351,7 @@ router.get("/admin", isAuthenticated, isAdmin,async (req, res, next) => {
         task_id: data.task_id,
         task_category: data.task_category,
         project_url: data.project_url,
-        feedback: data.feedback
+        feedback: data.feedback,
       };
     });
 
@@ -349,7 +367,8 @@ router.get("/admin", isAuthenticated, isAdmin,async (req, res, next) => {
 
 router.post(
   "/admin/task/approve/:id/:user",
-  isAuthenticated, isAdmin,
+  isAuthenticated,
+  isAdmin,
   async (req, res, next) => {
     const userData = await User.findOne({ unique_id: req.params.user });
     const task_dat = await Tasks.findOne({ task_id: req.params.id });
@@ -399,7 +418,15 @@ router.post(
         })
         .catch(console.log);
 
-      await userTasks.updateOne({ user_id: req.params.user }, [{ $set: { total_points: { $add: [ "$total_points", parseInt(req.body.points) ] } } }])
+      await userTasks.updateOne({ user_id: req.params.user }, [
+        {
+          $set: {
+            total_points: {
+              $add: ["$total_points", parseInt(req.body.points)],
+            },
+          },
+        },
+      ]);
 
       await userTasks.update(
         { _id: taskData._id },
@@ -438,7 +465,8 @@ router.post(
 
 router.post(
   "/admin/task/decline/:id/:user",
-  isAuthenticated, isAdmin,
+  isAuthenticated,
+  isAdmin,
   async (req, res, next) => {
     const userData = await User.findOne({ unique_id: req.params.user });
     const task_dat = await Tasks.findOne({ task_id: req.params.id });
@@ -478,7 +506,7 @@ router.post(
             task_description: task_dat.task_description,
             task_id: task_dat.task_id,
             task_category: task_dat.task_category,
-            denial_reason: req.body.denialreason
+            denial_reason: req.body.denialreason,
           });
           task
             .save()
@@ -525,152 +553,324 @@ router.post(
   }
 );
 
-router.get("/admin/tasks/coding", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Admin.findOne({ number: 1 })
-  const tasks = data.taskData;
+router.post(
+  "/admin/test/add",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    let c;
+    Tests.findOne({}, async (err, data) => {
+      if (data) {
+        const testdata = await Tests.find().limit(1).sort({ $natural: -1 });
+        c = testdata[0].test_id + 100;
+      } else {
+        c = 100;
+      }
 
-  const codingTasksArray = tasks.filter(function (data) {
-    return data.task_category === "CODING";
-  }).map(function (data) {
-    return {
-      id: data._id,
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
+      let newTest = new Tests({
+        test_id: c,
+        test_name: req.body.name,
+        test_description: req.body.description,
+        createdAt: new Date(req.body.date),
+        test_grade: req.body.grade,
+        test_link: req.body.link,
+        expireAt: new Date(req.body.expire),
+      });
 
-  res.render("coding", {
-    codingTasksArray: codingTasksArray
-  })
-});
+      newTest.save((err, Data) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Successfully added records for user tasks");
+        }
+      });
 
-router.get("/admin/tasks/design", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Admin.findOne({ number: 1 })
-  const tasks = data.taskData;
-
-  const designTasksArray = tasks.filter(function (data) {
-    return data.task_category === "DESIGN";
-  }).map(function (data) {
-    return {
-      id: data._id,
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
-
-  res.render("design", {
-    designTasksArray: designTasksArray
-  });
-});
-
-router.get("/admin/tasks/explore", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Admin.findOne({ number: 1 })
-  const tasks = data.taskData;
-
-  const exploreTasksArray = tasks.filter(function (data) {
-    return data.task_category === "EXPLORE";
-  }).map(function (data) {
-    return {
-      id: data._id,
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
-
-  res.render("explore", {
-    exploreTasksArray: exploreTasksArray
-  });
-});
-
-router.get("/admin/tasks/coding/:id", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Tasks.findOne({ task_id: req.params.id });
-  const admin = await Admin.findOne({ number: 1 })
-  const tasks = admin.taskData
-  if(data){
-    const codingTasksArray = tasks.filter(function (data) {
-      return data.task_id === parseInt(req.params.id);
-    }).map(function (data) {
-      return {
-        username: data.username,
-        userid: data.userId,
-        task_title: data.task_title,
-        task_description: data.task_description,
-        task_id: data.task_id,
-        task_category: data.task_category,
-        project_url: data.project_url,
-        feedback: data.feedback
-      };
+      res.redirect("/admin");
     });
-
-    res.render("codingpage", {
-      codingTasksArray: codingTasksArray
-    });
-  } else {
-    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
   }
-});
+);
 
-router.get("/admin/tasks/design/:id", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Tasks.findOne({ task_id: req.params.id });
-  const admin = await Admin.findOne({ number: 1 })
-  const tasks = admin.taskData
-  if(data){
-    const designTasksArray = tasks.filter(function (data) {
-      return data.task_id === parseInt(req.params.id);
-    }).map(function (data) {
-      return {
-        username: data.username,
-        userid: data.userId,
-        task_title: data.task_title,
-        task_description: data.task_description,
-        task_id: data.task_id,
-        task_category: data.task_category,
-        project_url: data.project_url,
-        feedback: data.feedback
-      };
+router.get(
+  "/admin/tasks/coding",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Admin.findOne({ number: 1 });
+    const tasks = data.taskData;
+
+    var codingTasksArray = tasks
+      .filter(function (data) {
+        return data.task_category === "CODING";
+      })
+      .map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
+
+    console.log(codingTasksArray);
+    console.log("-----------------------");
+    const uniqueArray = [
+      ...new Map(codingTasksArray.map((m) => [m.task_id, m])).values(),
+    ];
+    console.log(uniqueArray);
+    console.log("-----------------------");
+
+    let length = [];
+
+    uniqueArray.forEach((data) => {
+      var array = tasks
+        .filter(function (mesure) {
+          return mesure.task_id === data.task_id;
+        })
+        .map(function (mesure) {
+          return {
+            id: mesure._id,
+            task_id: mesure.task_id,
+          };
+        });
+
+      length.push(array.length);
     });
 
-    res.render("designpage", {
-      designTasksArray: designTasksArray
+    res.render("coding", {
+      uniqueArray: uniqueArray,
+      length: length,
     });
-  } else {
-    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
   }
-});
+);
 
-router.get("/admin/tasks/explore/:id", isAuthenticated, isAdmin, async(req, res, next) => {
-  const data = await Tasks.findOne({ task_id: req.params.id });
-  const admin = await Admin.findOne({ number: 1 })
-  const tasks = admin.taskData
-  if(data){
-    const exploreTasksArray = tasks.filter(function (data) {
-      return data.task_id === parseInt(req.params.id);
-    }).map(function (data) {
-      return {
-        username: data.username,
-        userid: data.userId,
-        task_title: data.task_title,
-        task_description: data.task_description,
-        task_id: data.task_id,
-        task_category: data.task_category,
-        project_url: data.project_url,
-        feedback: data.feedback
-      };
+router.get(
+  "/admin/tasks/design",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Admin.findOne({ number: 1 });
+    const tasks = data.taskData;
+
+    const designTasksArray = tasks
+      .filter(function (data) {
+        return data.task_category === "DESIGN";
+      })
+      .map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
+
+    console.log(designTasksArray);
+    console.log("-----------------------");
+    const uniqueArray = [
+      ...new Map(designTasksArray.map((m) => [m.task_id, m])).values(),
+    ];
+    console.log(uniqueArray);
+    console.log("-----------------------");
+
+    let length = [];
+
+    uniqueArray.forEach((data) => {
+      var array = tasks
+        .filter(function (mesure) {
+          return mesure.task_id === data.task_id;
+        })
+        .map(function (mesure) {
+          return {
+            id: mesure._id,
+            task_id: mesure.task_id,
+          };
+        });
+
+      length.push(array.length);
     });
 
-    res.render("explorepage", {
-      exploreTasksArray: exploreTasksArray
+    res.render("design", {
+      uniqueArray: uniqueArray,
+      length: length,
     });
-  } else {
-    return res.json({ "code": 404, "message": "Task ID not found. If you think this is a mistake please message +94776976673" })
   }
-});
+);
+
+router.get(
+  "/admin/tasks/explore",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Admin.findOne({ number: 1 });
+    const tasks = data.taskData;
+
+    const exploreTasksArray = tasks
+      .filter(function (data) {
+        return data.task_category === "EXPLORE";
+      })
+      .map(function (data) {
+        return {
+          id: data._id,
+          task_title: data.task_title,
+          task_description: data.task_description,
+          task_id: data.task_id,
+          task_category: data.task_category,
+        };
+      });
+
+    console.log(exploreTasksArray);
+    console.log("-----------------------");
+    const uniqueArray = [
+      ...new Map(exploreTasksArray.map((m) => [m.task_id, m])).values(),
+    ];
+    console.log(uniqueArray);
+    console.log("-----------------------");
+
+    let length = [];
+
+    uniqueArray.forEach((data) => {
+      var array = tasks
+        .filter(function (mesure) {
+          return mesure.task_id === data.task_id;
+        })
+        .map(function (mesure) {
+          return {
+            id: mesure._id,
+            task_id: mesure.task_id,
+          };
+        });
+
+      length.push(array.length);
+    });
+
+    res.render("explore", {
+      uniqueArray: uniqueArray,
+      length: length,
+    });
+  }
+);
+
+router.get(
+  "/admin/tasks/coding/:id",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Tasks.findOne({ task_id: req.params.id });
+    const admin = await Admin.findOne({ number: 1 });
+    const tasks = admin.taskData;
+    if (data) {
+      const codingTasksArray = tasks
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            username: data.username,
+            userid: data.userId,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+            project_url: data.project_url,
+            feedback: data.feedback,
+          };
+        });
+
+      res.render("codingpage", {
+        codingTasksArray: codingTasksArray,
+      });
+    } else {
+      return res.json({
+        code: 404,
+        message:
+          "Task ID not found. If you think this is a mistake please message +94776976673",
+      });
+    }
+  }
+);
+
+router.get(
+  "/admin/tasks/design/:id",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Tasks.findOne({ task_id: req.params.id });
+    const admin = await Admin.findOne({ number: 1 });
+    const tasks = admin.taskData;
+    if (data) {
+      const designTasksArray = tasks
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            username: data.username,
+            userid: data.userId,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+            project_url: data.project_url,
+            feedback: data.feedback,
+          };
+        });
+
+      res.render("designpage", {
+        designTasksArray: designTasksArray,
+      });
+    } else {
+      return res.json({
+        code: 404,
+        message:
+          "Task ID not found. If you think this is a mistake please message +94776976673",
+      });
+    }
+  }
+);
+
+router.get(
+  "/admin/tasks/explore/:id",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Tasks.findOne({ task_id: req.params.id });
+    const admin = await Admin.findOne({ number: 1 });
+    const tasks = admin.taskData;
+    if (data) {
+      const exploreTasksArray = tasks
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            username: data.username,
+            userid: data.userId,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+            project_url: data.project_url,
+            feedback: data.feedback,
+          };
+        });
+
+      res.render("explorepage", {
+        exploreTasksArray: exploreTasksArray,
+      });
+    } else {
+      return res.json({
+        code: 404,
+        message:
+          "Task ID not found. If you think this is a mistake please message +94776976673",
+      });
+    }
+  }
+);
 
 router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
@@ -701,7 +901,7 @@ router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
           task_title: task_dat.task_title,
           task_description: task_dat.task_description,
           task_id: task_dat.task_id,
-          task_category: task_dat.task_category
+          task_category: task_dat.task_category,
         });
         task
           .save()
@@ -721,7 +921,7 @@ router.post("/task/submit/:id", isAuthenticated, async (req, res, next) => {
           task_id: task_dat.task_id,
           task_category: task_dat.task_category,
           project_url: req.body.url,
-          feedback: req.body.feedback
+          feedback: req.body.feedback,
         });
         task
           .save()
@@ -774,7 +974,7 @@ router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
           task_title: task_dat.task_title,
           task_description: task_dat.task_description,
           task_id: task_dat.task_id,
-          task_category: task_dat.task_category
+          task_category: task_dat.task_category,
         });
         task
           .save()
@@ -794,7 +994,7 @@ router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
           task_id: task_dat.task_id,
           task_category: task_dat.task_category,
           project_url: req.body.url,
-          feedback: req.body.feedback
+          feedback: req.body.feedback,
         });
         task
           .save()
@@ -818,33 +1018,33 @@ router.post("/task/resubmit/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.get("/leaderboard", async(req, res, next) => {
-  const Database = await userTasks.aggregate([{$lookup:
+router.get("/leaderboard", async (req, res, next) => {
+  const Database = await userTasks.aggregate([
     {
-          from: "users",
-          localField: "user_id",
-          foreignField: "unique_id",
-          as: "same"
-      }
-     },
-     {
-        $match: { "same": { $ne: [] } }
-     },
-     {
-        $sort: { "total_points": -1 }
-     }
-  ])
+      $lookup: {
+        from: "users",
+        localField: "user_id",
+        foreignField: "unique_id",
+        as: "same",
+      },
+    },
+    {
+      $match: { same: { $ne: [] } },
+    },
+    {
+      $sort: { total_points: -1 },
+    },
+  ]);
 
   Database.forEach((data) => {
-    console.log(`${data.same[0].username} : ${data.total_points}`)
-  })
-
+    console.log(`${data.same[0].username} : ${data.total_points}`);
+  });
 
   res.render("leaderboard", {
     db: Database,
-    i: 1
-  })
-})
+    i: 1,
+  });
+});
 
 router.get("/logout", (req, res, next) => {
   if (req.session) {
@@ -886,13 +1086,32 @@ router.post("/forgetpass", (req, res, next) => {
   });
 });
 
-const uuid = () => {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
+// router.get("/uploadtest", (req, res, next) => {
+//   res.render("uploadtest")
+// })
+
+// router.post('/upload', upload.any(), async (req, res) => {
+//   try {
+//     const { body, files } = req;
+
+//     for (let f = 0; f < files.length; f += 1) {
+//       await uploadFile(files[f]);
+//     }
+
+//     console.log(body);
+//     res.status(200).send('Form Submitted');
+//   } catch (f) {
+//     res.send(f.message);
+//   }
+// });
+
+// const uuid = () => {
+//   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+//     var r = (Math.random() * 16) | 0,
+//       v = c == "x" ? r : (r & 0x3) | 0x8;
+//     return v.toString(16);
+//   });
+// };
 
 const com_id = () => {
   var val = Math.floor(1000 + Math.random() * 9000);
@@ -913,5 +1132,43 @@ const authentication = async () => {
   });
   return { sheets };
 };
+
+// const getDriveService = () => {
+//   const auth = new google.auth.GoogleAuth({
+//     keyFile: "drive.json",
+//     scopes: 'https://www.googleapis.com/auth/drive',
+//   });
+//   const drive = google.drive({ version: 'v3', auth });
+//   return { drive };
+// };
+
+// const uploadFile = async (fileObject) => {
+//   const bufferStream = new stream.PassThrough();
+//   bufferStream.end(fileObject.buffer);
+//   const { drive } = getDriveService();
+//   const { data } = await drive({ version: 'v3' }).files.create({
+//     media: {
+//       mimeType: fileObject.mimeType,
+//       body: bufferStream,
+//     },
+//     requestBody: {
+//       name: fileObject.originalname,
+//       parents: ['1IxnuvozpeOrGyrsgu53lSvZ4vQ_hD5eQ'],
+//     },
+//     fields: 'id,name',
+//   });
+//   console.log(`Uploaded file ${data.name} ${data.id}`);
+// };
+
+// function tConvert (time) {
+//   time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
+
+//   if (time.length > 1) {
+//     time = time.slice (1);
+//     time[5] = +time[0] < 12 ? 'AM' : 'PM';
+//     time[0] = +time[0] % 12 || 12;
+//   }
+//   return time.join ('');
+// }
 
 module.exports = router;
