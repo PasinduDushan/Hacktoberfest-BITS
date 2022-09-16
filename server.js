@@ -43,7 +43,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/views"));
 
 const index = require("./routes/index");
+const admin = require("./routes/admin");
+const task = require("./routes/task");
 app.use("/", index);
+app.use("/admin", admin);
+app.use("/task", task);
 
 app.use((req, res, next) => {
   const err = new Error("File Not Found");
