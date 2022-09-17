@@ -1,0 +1,18 @@
+<nav class="nav">
+    <div class="nav-logo">
+      <img src="https://www.blender.org/wp-content/uploads/2020/07/blender_logo_no_socket_white.png">
+    </div>
+    <div class="nav-links">
+      <a href="/">
+        <div class="nav-link <%= active == 'home' ? 'nav-active' : '' %>" ><span>Home</span></div>
+      </a> <a href="/tasks">
+        <div class="nav-link <%= active == 'task' ? 'nav-active' : '' %>" ><span>Tasks</span></div>
+      </a> <a href="#">
+        <div class="nav-link <%= active == 'test' ? 'nav-active' : '' %>" ><span>Online Test</span></div>
+      </a> <a href="#">
+        <div class="nav-link <%= active == 'lead' ? 'nav-active' : '' %>" ><span>Leaderboard</span></div>
+      </a> <a href="#">
+        <div class="nav-link <%= active == 'help' ? 'nav-active' : '' %>" ><span>Help</span></div>
+      </a>
+    </div>
+  </nav>

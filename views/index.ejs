@@ -7,43 +7,43 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
     
-    <!-- <link href="./css/main.css" rel="stylesheet"> !!! main.css needs to be cleaned up first -->
     <link href="./css/index.css" rel="stylesheet">
   </head>
   <body>
-    <nav class="nav">
-      <div class="nav-logo">
-        <img src="https://www.blender.org/wp-content/uploads/2020/07/blender_logo_no_socket_white.png">
-      </div>
-      <div class="nav-links">
-        <div class="nav-link nav-active"><a>Home</a></div>
-        <div class="nav-link"><a>Tasks</a></div>
-        <div class="nav-link"><a>Online Test</a></div>
-        <div class="nav-link"><a>Leaderboard</a></div>
-        <div class="nav-link"><a>Help</a></div>
-      </div>
-    </nav>
+    <%- include("partials/nav", { active: "home" }) %>
     
     <main class="main">
-      <section class="hero">
-        <div class="hero-title">
-          <p>BITS <span>'22</span></p>
+      <section class="landing">
+        <div class="hero">
+          <div class="hero-title">
+            <p>BITS <span>'22</span></p>
+          </div>
+          <div class="hero-desc">
+            <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.</p>
+          </div>
+          <div class="hero-quote">
+            <p><span>"</span> In order to keep meat from burning, it's best to slowly rotate it. <span>"</span></p>
+          </div>
+          <div class="hero-cta">
+            <a href="/login">Register</a>
+          </div>
         </div>
-        <div class="hero-desc">
-          <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.</p>
-        </div>
-        <div class="hero-quote">
-          <p><span>"</span>In order to keep meat from burning, it's best to slowly rotate it.<span>"</span></p>
-        </div>
-        <div class="hero-cta">
-          <a href="/login">Register</a>
+        
+        <div class="mascot">
+          <img src="https://www.freeiconspng.com/thumbs/pikachu-transparent/pikachu-transparent-clipart-4.png">
         </div>
       </section>
-
-      <section class="mascot">
-        <img src="https://www.freeiconspng.com/thumbs/pikachu-transparent/pikachu-transparent-clipart-4.png">
+      
+      <section class="info">
+        <div class="info-title">What is <span>BITS</span></div>
+        <div class="info-desc">
+          <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.</p>
+          <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.</p>
+          <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat</p>
+          <p>One can cook on and with an open fire. These are some of the ways to cook with fire outside. Cooking meat using a spit is a great way to evenly cook meat.</p>
+        </div>
       </section>
     </main>
 

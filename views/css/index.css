@@ -11,8 +11,8 @@ a {
 }
 
 body {
-  background: #1B1E27 url("") no-repeat fixed center;
-  background-size: cover;
+  background: #1B1E27 url("../img/bg_overlay.svg") no-repeat fixed center;
+  background-size: contain;
 }
 
 .nav {
@@ -58,12 +58,12 @@ body {
   opacity: 0.8;
 }
 .nav .nav-links .nav-active {
-  font-weight: 600;
+  font-weight: bold;
 }
-.nav .nav-links .nav-active a {
+.nav .nav-links .nav-active span {
   position: relative;
 }
-.nav .nav-links .nav-active a::after {
+.nav .nav-links .nav-active span::after {
   content: "";
   position: absolute;
   left: 0;
@@ -71,13 +71,15 @@ body {
   width: 100%;
   height: 4px;
   border-radius: 100px;
-  background: linear-gradient(110deg, #2686FA 0%, #0E22FD 100%);
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
 }
 
 .main {
   width: 100%;
+  padding: 4em 0 0 6em;
+}
+.main .landing {
   height: 88vh;
-  padding: 4em 4em 4em 6em;
   display: flex;
   flex-direction: row;
 }
@@ -87,39 +89,39 @@ body {
 }
 .hero .hero-title {
   font-size: 6em;
-  font-weight: 600;
+  font-weight: bold;
   color: #DCE7FE;
 }
 .hero .hero-title span {
-  background: linear-gradient(110deg, #2686FA 0%, #0E22FD 100%);
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
-  text-shadow: 0 0 100px #0E22FD;
+  text-shadow: 0 0 100px #0913FF;
 }
 .hero .hero-desc {
   margin: 1em 0;
   font-size: 1.2em;
   width: 40vw;
-  color: #B1BBD4;
+  color: rgba(220, 231, 254, 0.7725490196);
 }
 .hero .hero-quote {
   margin: 3em 0;
   font-size: 1.2em;
   font-style: italic;
-  color: #B1BBD4;
+  color: rgba(220, 231, 254, 0.7725490196);
 }
 .hero .hero-quote span {
-  color: #0E22FD;
+  color: #0913FF;
 }
 .hero .hero-cta {
-  background: linear-gradient(110deg, #2686FA 0%, #0E22FD 100%);
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
   color: #DCE7FE;
   display: inline-block;
   border-radius: 8px;
   font-size: 1.2em;
-  font-weight: 600;
-  box-shadow: 10px 0 80px 2px #0E22FD, -10px 0 80px 2px #2686FA;
+  font-weight: bold;
+  box-shadow: 10px 0 80px 2px #0913FF, -10px 0 80px 2px #2788F7;
   transition: 0.15s;
   -webkit-user-select: none;
      -moz-user-select: none;
@@ -133,7 +135,7 @@ body {
 }
 .hero .hero-cta:hover {
   transform: scale(1.05);
-  box-shadow: 10px 2px 80px 0px #0E22FD, -10px 2px 80px 0px #2686FA;
+  box-shadow: 10px 2px 80px 0px #0913FF, -10px 2px 80px 0px #2788F7;
 }
 .hero .hero-cta:active {
   transform: scale(0.95);
@@ -146,4 +148,33 @@ body {
 }
 .mascot img {
   width: 100%;
+}
+
+.info {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: #1B1E27;
+}
+.info .info-title {
+  font-size: 4em;
+  font-weight: bold;
+  color: #DCE7FE;
+}
+.info .info-title span {
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 100px #0913FF;
+}
+.info .info-desc {
+  width: 50%;
+  font-size: 1.1em;
+  color: rgba(220, 231, 254, 0.7725490196);
+}
+.info .info-desc p {
+  margin: 2em 0;
 }/*# sourceMappingURL=index.css.map */
