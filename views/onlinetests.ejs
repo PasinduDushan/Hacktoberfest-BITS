@@ -9,16 +9,18 @@
   <body>
     <center><h2>Welcome. Gain more points with Online Tests!</h2></center><br>
     <center><div class="row row-cols-1 row-cols-md-3 g-4">
-        <% test_data.forEach(function(data) { %>
+        <% filteredQuiz.forEach(function(data) { %>
             <div class="col">
                 <div class="card">
                   <div class="card-body">
                     <h5 class="card-title"><%= data.test_name %></h5>
                     <p class="card-text"><%= data.test_description %></p>
                     <p class="card-text">Test Date: <%= data.createdAt %></p>
-                    <p class="card-text">Test Expire: <%= data.expireAt %></p>
-                    <p class="card-text">Test Grade: <%= data.test_grade %></p>
-                    <a href="<%= data.test_link %>" class="btn btn-primary">Start the Test</a><br><br>
+                    <% if(!data.testEnabled){ %>
+                    <a href="<%= data.test_link %>" class="btn btn-primary disabled" aria-disabled="true">Start the Quiz</a><br><br>
+                    <% } else{ %>
+                    <a href="<%= data.test_link %>" class="btn btn-primary">Start the Quiz</a><br><br>
+                    <% } %>
                 </div>
                 </div>
               </div>

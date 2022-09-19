@@ -24,7 +24,13 @@ const isAdmin = (req, res, next) => {
   }
 };
 
-router.get("/:id", (req, res, next) => {
+const isHypeUser = (req, res, next) => {
+  if (req.session.hypertextUser === true){
+    res.json({ "code": 403, "message": "Forbidden" })
+  }
+}
+
+router.get("/:id", isHypeUser, (req, res, next) => {
   Tasks.findOne({ task_id: req.params.id }, (err, data) => {
     if (!data) {
       res.send("No task was found with the given ID");
@@ -68,7 +74,7 @@ router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
   });
 });
 
-router.post("/choose/:id", isAuthenticated, async (req, res, next) => {
+router.post("/choose/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
   const task = await Tasks.findOne({ task_id: req.params.id });
   if (!task) {
     res.sendStatus(404);
@@ -96,7 +102,7 @@ router.post("/choose/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.post("/submit/:id", isAuthenticated, async (req, res, next) => {
+router.post("/submit/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
   if (!userData) {
     return res.send("User does not exists in the database");
@@ -169,7 +175,7 @@ router.post("/submit/:id", isAuthenticated, async (req, res, next) => {
   }
 });
 
-router.post("/resubmit/:id", isAuthenticated, async (req, res, next) => {
+router.post("/resubmit/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
   if (!userData) {
     return res.send("User does not exists in the database");

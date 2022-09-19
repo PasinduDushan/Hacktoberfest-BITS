@@ -5,6 +5,7 @@ const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 const Tests = require("../models/tests");
+const IMP = require("../models/confidential")
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -72,7 +73,11 @@ router.post(
 
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
-      const choosedResults = pendingTasksArray.map(function (data) {
+      const choosedResults = pendingTasksArray
+      .filter(function (data) {
+        return data.task_id === parseInt(req.params.id);
+      })
+      .map(function (data) {
         return {
           id: data._id,
           task_title: data.task_title,
@@ -82,7 +87,11 @@ router.post(
         };
       });
 
-      const adminChoosedResults = adminTasksArray.map(function (data) {
+      const adminChoosedResults = adminTasksArray
+      .filter(function (data) {
+        return data.task_id === parseInt(req.params.id);
+      })
+      .map(function (data) {
         return {
           id: data._id,
           task_title: data.task_title,
@@ -119,6 +128,9 @@ router.post(
           },
         },
       ]);
+
+      console.log(choosedResults[0].id)
+      console.log(adminChoosedResults[0].id)
 
       await userTasks.update(
         { _id: taskData._id },
@@ -170,7 +182,11 @@ router.post(
 
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
-      const choosedResults = pendingTasksArray.map(function (data) {
+      const choosedResults = pendingTasksArray
+      .filter(function (data) {
+        return data.task_id === parseInt(req.params.id);
+      })
+      .map(function (data) {
         return {
           id: data._id,
           task_title: data.task_title,
@@ -180,7 +196,11 @@ router.post(
         };
       });
 
-      const adminChoosedResults = adminTasksArray.map(function (data) {
+      const adminChoosedResults = adminTasksArray
+      .filter(function (data) {
+        return data.task_id === parseInt(req.params.id);
+      })
+      .map(function (data) {
         return {
           id: data._id,
           task_title: data.task_title,
@@ -265,8 +285,9 @@ router.post(
         test_description: req.body.description,
         createdAt: new Date(req.body.date),
         test_grade: req.body.grade,
-        test_link: req.body.link,
-        expireAt: new Date(req.body.expire),
+        test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        testEnabled: false,
+        test_type: req.body.type
       });
 
       newTest.save((err, Data) => {
@@ -281,6 +302,47 @@ router.post(
     });
   }
 );
+
+router.get("/tests", isAuthenticated, isAdmin, async(req, res, next) => {
+  const test_data = await Tests.find();
+  res.render("tests", {
+    test_data: test_data
+  })
+})
+
+router.post("/test/enable/:id", isAuthenticated, isAdmin, async(req, res, next) => {
+  const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
+  if(!test_data) {
+    res.json({ "code": 404, "message": "Test not found" });
+  } else {
+    await Tests.updateOne(
+      { 
+        test_id: parseInt(req.params.id) 
+      }, 
+      { 
+        testEnabled: true,
+        test_link: req.body.link 
+      });
+    res.redirect("/admin/tests");
+  }
+})
+
+router.post("/test/disable/:id", isAuthenticated, isAdmin, async(req, res, next) => {
+  const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
+  if(!test_data) {
+    res.json({ "code": 404, "message": "Test not found" });
+  } else {
+    await Tests.updateOne(
+      { 
+        test_id: parseInt(req.params.id) 
+      }, 
+      { 
+        testEnabled: false,
+        test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+      });
+    res.redirect("/admin/tests");
+  }
+})
 
 router.get(
   "/tasks/coding",
@@ -563,5 +625,48 @@ router.get(
     }
   }
 );
+
+router.get("/power", isAuthenticated, isAdmin, async(req, res, next) => {
+  const data = await IMP.findOne({ power_admin: 1 });
+  if(1 !== req.session.userId){
+    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
+  } else {
+    res.render("power", {
+      data: data
+    });
+  }
+})
+
+router.post("/competition/enable", isAuthenticated, isAdmin, async(req, res, next) => {
+  if(1 !== req.session.userId){
+    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
+  } else {
+    await IMP.updateOne(
+      {
+        power_admin: 1
+      },{
+        competition_enabled: true
+      }
+    )
+  }
+
+  res.redirect("/admin/power")
+})
+
+router.post("/competition/disable", isAuthenticated, isAdmin, async(req, res, next) => {
+  if(1 !== req.session.userId){
+    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
+  } else {
+    await IMP.updateOne(
+      {
+        power_admin: 1
+      },{
+        competition_enabled: false
+      }
+    )
+  }
+
+  res.redirect("/admin/power")
+})
 
 module.exports = router;

@@ -5,16 +5,14 @@ const Schema = mongoose.Schema;
     test_id: Number,
     test_name: String,
     test_description: String,
-    test_grade: String,
     test_link: String,
+    test_grade: String,
     createdAt: { 
       type:Date, 
       default: Date.now() 
     },
-    expireAt:  { 
-      type: Date, 
-      default: undefined 
-    }
+    testEnabled: Boolean,
+    test_type: String
 })),
   (Test = mongoose.model("Test", testSchema));
 

@@ -17,6 +17,8 @@ const Schema = mongoose.Schema;
     type: Date,
     default: Date.now,
   },
+  bitsUser: Boolean,
+  hypertextUser: Boolean
 })),
   (User = mongoose.model("User", userSchema));
 

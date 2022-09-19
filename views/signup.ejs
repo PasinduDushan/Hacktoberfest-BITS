@@ -52,7 +52,7 @@
 				<input type="text" name="email" placeholder="E-mail" required=""
 				pattern="[-!#$%&'*+\/0-9=?ก-๙A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?ก-๙A-Z^_a-z`{|}~])*@[ก-๙a-zA-Z0-9](-*\.?[ก-๙a-zA-Z0-9])*\.[ก-๙a-zA-Z](-?[ก-๙a-zA-Z0-9])+$" class="form-control"><br />
 				<input type="text" name="username" placeholder="Username" required="" class="form-control"><br />
-				<input type="text" name="school" placeholder="Your School" value="Ananda College Colombo" required="" class="form-control" disabled><br />
+				<input type="text" name="school" placeholder="Your School" value="Ananda College Colombo" required="" class="form-control" readonly="true"><br />
 				<input type="text" name="fullname" placeholder="Your Fullname" required="" class="form-control"><br />
 				<input type="number" name="age" placeholder="Your Age (If your age is not completed, please renter the next nearest number)" class="form-control"><br />
 				<label for="grade">Choose your grade:</label>
@@ -63,7 +63,13 @@
 					<option value = "Grade 9">Grade 9</option>
 					<option value = "Grade 10">Grade 10</option>
 					<option value = "Grade 11">Grade 11</option>
+					<option value = "After O/L 1000">After O/L</option>
 				</select><br><br> 
+				<label for="competition">Choose to what competition you're participating (Learn More):</label>
+				<select name="competition" id="condition" place>
+					<option value = "bitshype" selected>Bits and Hypertext</option>
+					<option value = "hype">Hypertext Only</option>
+				</select><br><br>
 				<input type="password" name="password" placeholder="Password" required="" class="form-control"><br />
 				<input type="password" name="passwordConf" placeholder="Confirm Password" required=""
 					class="form-control"><br />

@@ -18,6 +18,14 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
+const isHypeUser = (req, res, next) => {
+  if (req.session.hypertextUser === true){
+    res.json({ "code": 403, "message": "Forbidden" })
+  } else {
+    next();
+  }
+}
+
 router.get("/", (req, res, next) => {
   return res.render("index.ejs");
 });
@@ -49,6 +57,14 @@ router.post("/signup", async (req, res, next) => {
             }
 
             let bits_id = com_id();
+            let bitshype = false;
+            let hype = false;
+
+            if(req.body.competition === 'bitshype'){
+              bitshype = true;
+            } else {
+              hype = true;
+            }
 
             let newPerson = new User({
               unique_id: c,
@@ -62,6 +78,8 @@ router.post("/signup", async (req, res, next) => {
               password: personInfo.password,
               passwordConf: personInfo.passwordConf,
               adminUser: false,
+              bitsUser: bitshype,
+              hypertextUser: hype
             });
 
             let newUserTasks = new userTasks({
@@ -118,7 +136,7 @@ router.post("/signup", async (req, res, next) => {
 
             newPerson.save((err, Person) => {
               if (err) console.log(err);
-              else {
+              else if(bitshype === true){
                 async function main() {
                   let transporter = nodemailer.createTransport({
                     host: "smtp.mail.yahoo.com",
@@ -131,10 +149,32 @@ router.post("/signup", async (req, res, next) => {
                   });
 
                   let info = await transporter.sendMail({
-                    from: '"BITS 22" <pasindudushan07@yahoo.com>',
+                    from: '"BITS Organizing Community" <pasindudushan07@yahoo.com>',
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
-                    html: `<p>Hello there, Welcome to BITS'22 organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
+                    html: `<p>Hello there, Welcome to BITS'22 with Hypertext organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
+                  });
+
+                  console.log("Message sent: %s", info.messageId);
+                }
+                main().catch(console.error);
+              } else if(hype === true){
+                async function main() {
+                  let transporter = nodemailer.createTransport({
+                    host: "smtp.mail.yahoo.com",
+                    port: 465,
+                    secure: true,
+                    auth: {
+                      user: "pasindudushan07@yahoo.com",
+                      pass: "sjrbeghvrlhorwnn",
+                    },
+                  });
+
+                  let info = await transporter.sendMail({
+                    from: '"Hypertext Organizing Community" <pasindudushan07@yahoo.com>',
+                    to: personInfo.email,
+                    subject: `Welcome ${personInfo.username}`,
+                    html: `<p>Hello there, Welcome to Hypertext organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
                   });
 
                   console.log("Message sent: %s", info.messageId);
@@ -145,7 +185,7 @@ router.post("/signup", async (req, res, next) => {
           })
             .sort({ _id: -1 })
             .limit(1);
-          res.send({ Success: "You are regestered,You can login now." });
+          res.send({ Success: "You are registered,You can login now." });
         } else {
           res.send({ Success: "Email is already used." });
         }
@@ -156,7 +196,7 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-router.get("/tasks", async (req, res, next) => {
+router.get("/tasks", isAuthenticated, isHypeUser, async (req, res, next) => {
   const tasks = await Tasks.find();
   res.render("taskdata", {
     tasks: tasks,
@@ -165,10 +205,36 @@ router.get("/tasks", async (req, res, next) => {
 
 router.get("/onlinetest", isAuthenticated, async (req, res, next) => {
   const user_data = await User.findOne({ unique_id: req.session.userId });
-  const test_data = await Tests.find({ test_grade: user_data.grade });
+  const test_data = await Tests.find();
+  const str = user_data.grade;
+
+  const replaced = str.replace(/\D/g, '');
+
+  let user_type;
+  if(replaced >= 6 && replaced <= 9 ){
+    user_type = "junior";
+  } else if(replaced == 10 || replaced == 11 || replaced == 1000){
+    user_type = "senior";
+  }
+
+  const filteredQuiz = test_data
+  .filter(function (data) {
+    return data.test_type === user_type;
+  })
+  .map(function (data) {
+    return {
+      id: data._id,
+      createdAt: data.createdAt,
+      test_id: data.test_id,
+      test_name: data.test_name,
+      test_description: data.test_description,
+      test_link: data.test_link,
+      test_enabled: data.testEnabled,
+    };
+  });
+
   res.render("onlinetests", {
-    user_date: user_data,
-    test_data: test_data,
+    filteredQuiz:filteredQuiz
   });
 });
 
@@ -183,6 +249,8 @@ router.post("/login", (req, res, next) => {
         if (data.adminUser) {
           req.session.adminToken = process.env.TOKEN;
         }
+        req.session.bitsUser = data.bitsUser;
+        req.session.hypertextUser = data.hypertextUser;
         req.session.userId = data.unique_id;
         res.send({ Success: "Success!" });
       } else {
@@ -194,7 +262,7 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.get("/profile", isAuthenticated, async (req, res, next) => {
+router.get("/profile", isAuthenticated, isHypeUser, async (req, res, next) => {
   const taskData = await userTasks.findOne({ user_id: req.session.userId });
   const userData = await User.findOne({ unique_id: req.session.userId });
   var choosedTasksArray = taskData.choosed_tasks;
