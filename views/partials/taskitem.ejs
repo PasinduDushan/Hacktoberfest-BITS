@@ -1,0 +1,34 @@
+<div class="task-item" data-task-id="1005">
+
+    <div class="ti-bg-acnt tibg-tr"></div>
+    <div class="ti-bg-acnt tibg-bl"></div>
+    
+    <div class="ti-info">
+      <h4><%= data.task_title %></h4>
+      <p><%= data.task_description %></p>
+    </div>
+    
+    <div class="ti-cta">
+      <a href="/task/<%=data.task_id%>">View task</a>
+    </div>
+
+    <div class="ti-type">
+      <div><i></i>X</div>
+      <div class="tity-divider"></div>
+      <div><p><%=data.task_id%></p></div>
+    </div>
+    
+</div>
+
+  <!-- <% tasks.forEach(function(data) { %>
+    <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title"><%= data.task_title %></h5>
+            <p class="card-text"><%= data.task_description %></p>
+            <p class="card-text">Category: <%= data.task_category %></p>
+            <a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
+        </div>
+        </div>
+      </div>
+<% }) %> -->

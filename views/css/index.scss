@@ -73,11 +73,12 @@
 
         &:hover {
             transform: scale(1.05);
-            box-shadow: 10px 2px 80px 0px $col-acnt-dark, -10px 2px 80px 0px $col-acnt-light;
+            box-shadow: 10px 2px 70px 0px $col-acnt-dark, -10px 2px 70px 0px $col-acnt-light;
         }
-
+        
         &:active {
             transform: scale(.95);
+            box-shadow: 10px 2px 90px 4px $col-acnt-dark, -10px 2px 90px 4px $col-acnt-light;
         }
     }
 }
