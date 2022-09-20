@@ -76,7 +76,7 @@ body {
 
 .main {
   width: 100%;
-  padding: 4em 0 0 6em;
+  padding: 4em 6em 0 6em;
 }
 
 .tasks {
@@ -144,10 +144,10 @@ body {
   padding: 0.7em 1.8em;
 }
 .tasks .task-item .ti-cta:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
 }
 .tasks .task-item .ti-cta:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 .tasks .task-item .ti-type {
   position: absolute;
@@ -166,4 +166,82 @@ body {
   width: 1px;
   height: 1.7em;
   margin: 0 0.5em;
+}
+.tasks .task-filter {
+  width: 40%;
+}
+.tasks .tf-list {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 0.5em;
+  font-size: 1.1em;
+}
+.tasks .tf-list .tf-item {
+  padding: 0.6em 3em 0.6em 1em;
+  border-radius: 8px;
+  transition: 0.2s;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.tasks .tf-list .tf-item:hover {
+  transform: scale(1.1);
+}
+.tasks .tf-list .tf-item:active {
+  transform: scale(0.9);
+}
+.tasks .tf-list .tf-item.tf-blue p {
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-blue.tf-active {
+  background: linear-gradient(110deg, #2788F7, #0913FF);
+}
+.tasks .tf-list .tf-item.tf-blue.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-green p {
+  background: linear-gradient(110deg, #199607 0%, #19C346 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-green.tf-active {
+  background: linear-gradient(110deg, #199607, #19C346);
+}
+.tasks .tf-list .tf-item.tf-green.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-red p {
+  background: linear-gradient(110deg, #A70707 0%, #FC2828 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-red.tf-active {
+  background: linear-gradient(110deg, #A70707, #FC2828);
+}
+.tasks .tf-list .tf-item.tf-red.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-yellow p {
+  background: linear-gradient(110deg, #DE8D13 0%, #CB9D00 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-yellow.tf-active {
+  background: linear-gradient(110deg, #DE8D13, #CB9D00);
+}
+.tasks .tf-list .tf-item.tf-yellow.tf-active p {
+  color: #DCE7FE;
 }/*# sourceMappingURL=taskdata.css.map */

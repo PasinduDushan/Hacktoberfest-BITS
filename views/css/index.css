@@ -134,11 +134,11 @@ body {
   padding: 0.7em 2.5em;
 }
 .hero .hero-cta:hover {
-  transform: scale(1.05);
+  transform: scale(1.1);
   box-shadow: 10px 2px 70px 0px #0913FF, -10px 2px 70px 0px #2788F7;
 }
 .hero .hero-cta:active {
-  transform: scale(0.95);
+  transform: scale(0.9);
   box-shadow: 10px 2px 90px 4px #0913FF, -10px 2px 90px 4px #2788F7;
 }
 

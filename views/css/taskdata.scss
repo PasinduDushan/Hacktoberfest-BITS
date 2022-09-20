@@ -1,8 +1,9 @@
+@use "sass:meta";
 @import "./main";
 
 .main {
     width: 100%;
-    padding: 4em 0 0 6em;
+    padding: 4em 6em 0 6em;
 }
 
 .tasks {
@@ -77,12 +78,12 @@
             }
 
             &:hover {
-                transform: scale(1.05);
+                transform: scale(1.1);
                 // box-shadow: 10px 2px 80px 0px $col-acnt-dark, -10px 2px 80px 0px $col-acnt-light;
             }
 
             &:active {
-                transform: scale(.95);
+                transform: scale(.9);
             }
         }
 
@@ -107,6 +108,61 @@
             }
         }
         
+    }
+
+    .task-filter {
+        width: 40%;
+    }
+
+    .tf-list {
+        width: max-content;
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        gap: .5em;
+        font-size: 1.1em;
+        // background-color: #00ffeaa8;
+        
+        .tf-item {
+            padding: .6em 3em .6em 1em;
+            border-radius: 8px;
+            transition: .2s;
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+            
+            &:active {
+                transform: scale(.9);
+            }
+
+            // fancier way of writing the repetitive .tf-COLOR code (for filter menu/side bar)
+            @mixin tf-filters($args...) {
+            @each $name, $cols in meta.keywords($args) {
+                &.tf-#{$name} {
+                    p {
+                        @include gradientText($cols...);    
+                    }
+                    &.tf-active{
+                        background: linear-gradient(110deg, $cols...);
+                        p {
+                            color: $col-light;
+                        }
+                    }
+                }
+            } }
+
+            @include tf-filters(
+                $blue: ($col-acnt-light, $col-acnt-dark),
+                $green: (#199607, #19C346),
+                $red: (#A70707, #FC2828),
+                $yellow: (#DE8D13, #CB9D00)
+            )
+
+        }
     }
 
 }

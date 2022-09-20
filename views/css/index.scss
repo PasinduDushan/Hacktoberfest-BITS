@@ -1,12 +1,5 @@
 @import "./main"; //NOTE: this is only used to generate the css so, this should be the correct path
 
-@mixin gradientText {
-    background: linear-gradient(110deg, $col-acnt-light 0%, $col-acnt-dark 100%);
-    background-clip: text;
-    color: transparent;
-    text-shadow: 0 0 100px $col-acnt-dark;
-}
-
 .main {
     width: 100%;
     padding: 4em 0 0 6em;
@@ -28,10 +21,7 @@
     color: $col-light;
 
         span {
-            background: linear-gradient(110deg, $col-acnt-light 0%, $col-acnt-dark 100%);
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 100px $col-acnt-dark;
+            @include gradientText($col-acnt-light, $col-acnt-dark, 100px);
         }
     }
 
@@ -72,12 +62,12 @@
         }
 
         &:hover {
-            transform: scale(1.05);
+            transform: scale(1.1);
             box-shadow: 10px 2px 70px 0px $col-acnt-dark, -10px 2px 70px 0px $col-acnt-light;
         }
         
         &:active {
-            transform: scale(.95);
+            transform: scale(.9);
             box-shadow: 10px 2px 90px 4px $col-acnt-dark, -10px 2px 90px 4px $col-acnt-light;
         }
     }
@@ -107,7 +97,7 @@
         font-weight: bold;
         color: $col-light;
         span {
-            @include gradientText();
+            @include gradientText($col-acnt-light, $col-acnt-dark, 100px);
         }
     }
     

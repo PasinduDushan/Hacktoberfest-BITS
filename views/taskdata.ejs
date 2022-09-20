@@ -16,23 +16,6 @@
   <body>
     <%- include('partials/nav', {active: "task"}) %>
 
-    <!-- <center><h2>Select a task and start your work!</h2></center><br>
-    <center><div class="row row-cols-1 row-cols-md-3 g-4">
-        <% tasks.forEach(function(data) { %>
-            <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <h5 class="card-title"><%= data.task_title %></h5>
-                    <p class="card-text"><%= data.task_description %></p>
-                    <p class="card-text">Category: <%= data.task_category %></p>
-                    <a href="https://pasindudushan-bits22-444xv6j4cj59r-3000.githubpreview.dev/task/<%= data.task_id %>" class="btn btn-primary">Go to Task Page</a><br><br>
-                </div>
-                </div>
-              </div>
-        <% }) %>
-    </div></center>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script> -->
-  
     <main class="main">
       <section class="task-search"></section>
       <section class="tasks">
@@ -44,10 +27,24 @@
 
         </div>
         <div class="task-filter">
-          <p>Pikachu</p>
+          <div class="tf-list">
+            <div class="tf-item tf-blue tf-active"><p>All Tasks</p></div>
+            <div class="tf-item tf-green"><p>Accepted Tasks</p></div>
+            <div class="tf-item tf-red"><p>Rejected Tasks</p></div>
+            <div class="tf-item tf-yellow"><p>Pending Tasks</p></div>
+          </div>
         </div>
       </section>
     </main>
+
+    <script>
+      document.querySelectorAll(".tf-item").forEach((el) => {
+        el.addEventListener("click", () => {
+          document.querySelector(".tf-active").classList.remove("tf-active")
+          el.classList.add("tf-active")
+        })
+      })
+    </script>
     
   </body>
 </html>
