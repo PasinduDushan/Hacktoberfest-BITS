@@ -16,10 +16,10 @@
                     <h5 class="card-title"><%= data.test_name %></h5>
                     <p class="card-text"><%= data.test_description %></p>
                     <p class="card-text">Test Date: <%= data.createdAt %></p>
-                    <% if(!data.testEnabled){ %>
-                    <a href="<%= data.test_link %>" class="btn btn-primary disabled" aria-disabled="true">Start the Quiz</a><br><br>
+                    <% if(data.testEnabled){ %>
+                      <a href="<%= data.test_link %>" class="btn btn-primary">Start the Quiz</a><br><br>
                     <% } else{ %>
-                    <a href="<%= data.test_link %>" class="btn btn-primary">Start the Quiz</a><br><br>
+                      <a href="<%= data.test_link %>" class="btn btn-primary disabled" aria-disabled="true">Start the Quiz</a><br><br>
                     <% } %>
                 </div>
                 </div>
