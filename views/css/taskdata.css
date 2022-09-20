@@ -1,0 +1,247 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+body {
+  background: #1B1E27 url("../img/bg_overlay.svg") no-repeat fixed center;
+  background-size: contain;
+}
+
+.nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  width: 100%;
+  height: 12vh;
+  padding: 1.2em 4em 1.2em 6em;
+  color: #DCE7FE;
+}
+.nav .nav-logo {
+  height: 100%;
+}
+.nav .nav-logo img {
+  height: 100%;
+  width: auto;
+}
+.nav .nav-links {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5em;
+  margin-left: auto;
+  font-size: 1.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.nav .nav-links .nav-link {
+  padding: 0.8em;
+  transition: 0.1s;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.nav .nav-links .nav-link:hover {
+  transform: scale(1.1);
+  opacity: 0.9;
+}
+.nav .nav-links .nav-link:active {
+  transform: scale(0.9);
+  opacity: 0.8;
+}
+.nav .nav-links .nav-active {
+  font-weight: bold;
+}
+.nav .nav-links .nav-active span {
+  position: relative;
+}
+.nav .nav-links .nav-active span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 110%;
+  width: 100%;
+  height: 4px;
+  border-radius: 100px;
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+}
+
+.main {
+  width: 100%;
+  padding: 4em 6em 0 6em;
+}
+
+.tasks {
+  display: flex;
+  flex-direction: row;
+}
+.tasks .task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3em;
+  width: 60%;
+}
+.tasks .task-item {
+  position: relative;
+  background-color: #293045;
+  border-radius: 24px;
+  padding: 2.2em 3em;
+  margin: 0 2em;
+  overflow: hidden;
+}
+.tasks .task-item .ti-bg-acnt {
+  position: absolute;
+  width: 0;
+  height: 0;
+  box-shadow: 0 0 300px 60px rgba(31, 104, 249, 0.6862745098);
+}
+.tasks .task-item .tibg-tr {
+  top: 0;
+  right: 5em;
+}
+.tasks .task-item .tibg-bl {
+  bottom: 0;
+  left: 5em;
+}
+.tasks .task-item .ti-info {
+  margin-bottom: 2.5em;
+  width: 80%;
+}
+.tasks .task-item .ti-info h4 {
+  color: #DCE7FE;
+  font-size: 1.3em;
+  margin-bottom: 1em;
+}
+.tasks .task-item .ti-info p {
+  color: rgba(219, 229, 255, 0.7568627451);
+  font-size: 1em;
+  height: 3em;
+}
+.tasks .task-item .ti-cta {
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+  color: #DCE7FE;
+  display: inline-block;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: bold;
+  transition: 0.15s;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  cursor: pointer;
+}
+.tasks .task-item .ti-cta a {
+  display: block;
+  padding: 0.7em 1.8em;
+}
+.tasks .task-item .ti-cta:hover {
+  transform: scale(1.1);
+}
+.tasks .task-item .ti-cta:active {
+  transform: scale(0.9);
+}
+.tasks .task-item .ti-type {
+  position: absolute;
+  top: 1.5em;
+  right: 1.5em;
+  padding: 0 1em;
+  border-radius: 12px;
+  background-color: #1E2436;
+  color: #DCE7FE;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.tasks .task-item .ti-type .tity-divider {
+  background-color: rgba(220, 231, 254, 0.7725490196);
+  width: 1px;
+  height: 1.7em;
+  margin: 0 0.5em;
+}
+.tasks .task-filter {
+  width: 40%;
+}
+.tasks .tf-list {
+  width: -webkit-max-content;
+  width: -moz-max-content;
+  width: max-content;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: 0.5em;
+  font-size: 1.1em;
+}
+.tasks .tf-list .tf-item {
+  padding: 0.6em 3em 0.6em 1em;
+  border-radius: 8px;
+  transition: 0.2s;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+.tasks .tf-list .tf-item:hover {
+  transform: scale(1.1);
+}
+.tasks .tf-list .tf-item:active {
+  transform: scale(0.9);
+}
+.tasks .tf-list .tf-item.tf-blue p {
+  background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-blue.tf-active {
+  background: linear-gradient(110deg, #2788F7, #0913FF);
+}
+.tasks .tf-list .tf-item.tf-blue.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-green p {
+  background: linear-gradient(110deg, #199607 0%, #19C346 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-green.tf-active {
+  background: linear-gradient(110deg, #199607, #19C346);
+}
+.tasks .tf-list .tf-item.tf-green.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-red p {
+  background: linear-gradient(110deg, #A70707 0%, #FC2828 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-red.tf-active {
+  background: linear-gradient(110deg, #A70707, #FC2828);
+}
+.tasks .tf-list .tf-item.tf-red.tf-active p {
+  color: #DCE7FE;
+}
+.tasks .tf-list .tf-item.tf-yellow p {
+  background: linear-gradient(110deg, #DE8D13 0%, #CB9D00 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.tasks .tf-list .tf-item.tf-yellow.tf-active {
+  background: linear-gradient(110deg, #DE8D13, #CB9D00);
+}
+.tasks .tf-list .tf-item.tf-yellow.tf-active p {
+  color: #DCE7FE;
+}/*# sourceMappingURL=taskdata.css.map */

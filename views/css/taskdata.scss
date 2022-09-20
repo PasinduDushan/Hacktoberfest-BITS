@@ -1,0 +1,168 @@
+@use "sass:meta";
+@import "./main";
+
+.main {
+    width: 100%;
+    padding: 4em 6em 0 6em;
+}
+
+.tasks {
+    display: flex;
+    flex-direction: row;
+
+    .task-list {
+        display: flex;
+        flex-direction: column;
+        gap: 3em;
+        width: 60%;
+    }
+
+    .task-item {
+        position: relative;
+        background-color: $col-ti-bg;
+        border-radius: 24px;
+        padding: 2.2em 3em;
+        margin: 0 2em;
+        overflow: hidden;
+
+        .ti-bg-acnt {
+            position: absolute;
+            width: 0;
+            height: 0;
+            box-shadow: 0 0 300px 60px $col-acnt-mid;
+        }
+
+        .tibg-tr {
+            top: 0;
+            right: 5em;
+        }
+
+        .tibg-bl {
+            bottom: 0;
+            left: 5em;
+        }
+
+        .ti-info {
+            margin-bottom: 2.5em;
+            width: 80%;
+
+            h4 {
+                color: $col-light;
+                font-size: 1.3em;
+                margin-bottom: 1.0em;
+            }
+
+            p {
+                color: $col-ti-desc;
+                font-size: 1.0em;
+                height: 3em; // fontsize * 1.5 lineheight * 2 lines
+            }
+        }
+
+        .ti-cta {
+            background: linear-gradient(110deg, $col-acnt-light 0%, $col-acnt-dark 100%);
+            color: $col-light;
+            display: inline-block;
+            // padding: .7em 2.5em;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            // box-shadow: 10px 0 80px 2px $col-acnt-dark, -10px 0 80px 2px $col-acnt-light;
+            transition: .15s;
+            user-select: none;
+            cursor: pointer;
+
+            a {
+                display: block;
+                padding: .7em 1.8em;
+            }
+
+            &:hover {
+                transform: scale(1.1);
+                // box-shadow: 10px 2px 80px 0px $col-acnt-dark, -10px 2px 80px 0px $col-acnt-light;
+            }
+
+            &:active {
+                transform: scale(.9);
+            }
+        }
+
+        .ti-type {
+            position: absolute;
+            top: 1.5em;
+            right: 1.5em;
+            padding: 0 1em;
+            border-radius: 12px;
+            background-color: $col-ti-tag;
+            color: $col-light;
+
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .tity-divider {
+                background-color: $col-mid;
+                width: 1px;
+                height: 1.7em;
+                margin: 0 .5em;
+            }
+        }
+        
+    }
+
+    .task-filter {
+        width: 40%;
+    }
+
+    .tf-list {
+        width: max-content;
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+        gap: .5em;
+        font-size: 1.1em;
+        // background-color: #00ffeaa8;
+        
+        .tf-item {
+            padding: .6em 3em .6em 1em;
+            border-radius: 8px;
+            transition: .2s;
+            cursor: pointer;
+            user-select: none;
+
+            &:hover {
+                transform: scale(1.1);
+            }
+            
+            &:active {
+                transform: scale(.9);
+            }
+
+            // fancier way of writing the repetitive .tf-COLOR code (for filter menu/side bar)
+            @mixin tf-filters($args...) {
+            @each $name, $cols in meta.keywords($args) {
+                &.tf-#{$name} {
+                    p {
+                        @include gradientText($cols...);    
+                    }
+                    &.tf-active{
+                        background: linear-gradient(110deg, $cols...);
+                        p {
+                            color: $col-light;
+                        }
+                    }
+                }
+            } }
+
+            @include tf-filters(
+                $blue: ($col-acnt-light, $col-acnt-dark),
+                $green: (#199607, #19C346),
+                $red: (#A70707, #FC2828),
+                $yellow: (#DE8D13, #CB9D00)
+            )
+
+        }
+    }
+
+}
