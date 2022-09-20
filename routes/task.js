@@ -5,6 +5,7 @@ const userTasks = require("../models/userTasks");
 const IMP = require("../models/confidential")
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
+var result = '# markdown-it rulezz!';
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -51,6 +52,7 @@ router.get("/:id", isEnabled, (req, res, next) => {
         id: data.task_id,
         title: data.task_title,
         description: data.big_description,
+        result: result
       });
     }
   });
@@ -66,12 +68,17 @@ router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
       c = 100;
     }
 
+    let target = req.body.advance
+    let finalString = target.replaceAll('"', '')
+    console.log(finalString)
+
     let newTask = new Tasks({
       task_id: c,
       task_title: req.body.title,
       task_description: req.body.smalldescription,
       task_category: req.body.category,
       big_description: req.body.bigdescription,
+      advanceTask: finalString,
     });
 
     newTask.save((err, Data) => {

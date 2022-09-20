@@ -735,4 +735,8 @@ router.post("/email/send/hypertext", isAuthenticated, isAdmin, async(req, res, n
   res.redirect("/admin/email/send")
 })
 
+router.get("/test/submittions", isAuthenticated, isAdmin, async(req, res, next) => {
+  // Have to code here
+});
+
 module.exports = router;

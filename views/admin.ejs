@@ -28,20 +28,21 @@
             You must type a small description for your task
           </div>
         </div><br>
-        <div class="col-md-4">
-          <label for="validationCustom01" class="form-label">Big Description</label>
-          <input type="text" class="form-control" name="bigdescription" id="validationCustom01" placeholder="A Beautiful big description for the beautiful task" maxlength="2000" required>
-          <div class="invalid-feedback">
-            You must type a big description for your task
-          </div>
+        <div class="form-floating">
+          <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" name="bigdescription"></textarea>
+          <label for="floatingTextarea">Big Description (Markdown Supported)</label>
         </div><br>
-        <div class="col-md-4">
-          <label for="validationCustom01" class="form-label">Task Category</label>
-          <input type="text" class="form-control" name="category" id="validationCustom01" placeholder="The category of this task" maxlength="10" required>
-          <div class="invalid-feedback">
-            You must type the category of your task
-          </div>
-        </div><br>
+        <label for="category">Task Category:</label>
+        <select name="category" id="condition" place>
+          <option value = "CODING" selected>Coding</option>
+          <option value = "DESIGN">Design</option>
+          <option value = "EXPLORE">Explore</option>
+        </select><br><br>
+        <label for="advance">Advance Task?</label>
+        <select name="advance" id="condition" place>
+          <option value = "false" selected>No</option>
+          <option value = "true">Yes</option>
+        </select><br><br> 
         <div class="col-12" style="display: flex; justify-content: center;">
           <button type="submit" class="btn btn-primary">Create</button>
         </div><br>

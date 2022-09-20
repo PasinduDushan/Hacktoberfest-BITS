@@ -6,7 +6,8 @@ const Schema = mongoose.Schema;
     task_title: String,
     task_description: String,
     big_description: String,
-    task_category: String
+    task_category: String,
+    advanceTask: Boolean
 })),
   (Task = mongoose.model("Task", taskSchema));
 

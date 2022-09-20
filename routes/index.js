@@ -343,7 +343,11 @@ router.get("/profile", isEnabled, isAuthenticated, isHypeUser, async (req, res, 
   });
 });
 
-router.get("/leaderboard", isEnabled, async (req, res, next) => {
+router.post("/test/submit", isEnabled, isAuthenticated, isHypeUser, async(req, res, next) => {
+  // Have to code here
+});
+
+router.get("/leaderboard", isEnabled, isHypeUser, async (req, res, next) => {
   const Database = await userTasks.aggregate([
     {
       $lookup: {
