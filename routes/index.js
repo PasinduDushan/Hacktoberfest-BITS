@@ -4,6 +4,7 @@ const User = require("../models/user");
 const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Tests = require("../models/tests");
+const IMP = require("../models/confidential")
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 require("dotenv").config();
@@ -21,6 +22,15 @@ const isAuthenticated = (req, res, next) => {
 const isHypeUser = (req, res, next) => {
   if (req.session.hypertextUser === true){
     res.json({ "code": 403, "message": "Forbidden" })
+  } else {
+    next();
+  }
+}
+
+const isEnabled = async (req, res, next) => {
+  const data = await IMP.findOne({ power_admin: 1 });
+  if(!data.competition_enabled){
+    res.json({ "code": 403, "message": "Competition Has Not Started Yet. Please wait until 1st october" })
   } else {
     next();
   }
@@ -196,14 +206,31 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-router.get("/tasks", isAuthenticated, isHypeUser, async (req, res, next) => {
+router.get("/tasks", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
   const tasks = await Tasks.find();
+  const user_tasks = await userTasks.findOne({ user_id: req.session.userId });
+  const approved = user_tasks.approved_tasks;
+  const declined = user_tasks.declined_tasks;
+  const pending = user_tasks.pending_tasks;
+  const approvedArray = approved.map(function (data){
+    return data.task_id
+  });
+  const declineArray = declined.map(function (data){
+    return data.task_id
+  });
+  const pendingArray = pending.map(function (data){
+    return data.task_id
+  });
+  console.log(approvedArray);
   res.render("taskdata", {
     tasks: tasks,
+    approvedArray: approvedArray,
+    declineArray: declineArray,
+    pendingArray: pendingArray
   });
 });
 
-router.get("/onlinetest", isAuthenticated, async (req, res, next) => {
+router.get("/onlinetest", isEnabled, isAuthenticated, async (req, res, next) => {
   const user_data = await User.findOne({ unique_id: req.session.userId });
   const test_data = await Tests.find();
   const str = user_data.grade;
@@ -238,11 +265,11 @@ router.get("/onlinetest", isAuthenticated, async (req, res, next) => {
   });
 });
 
-router.get("/login", (req, res, next) => {
+router.get("/login", isEnabled, (req, res, next) => {
   return res.render("login.ejs");
 });
 
-router.post("/login", (req, res, next) => {
+router.post("/login", isEnabled, (req, res, next) => {
   User.findOne({ email: req.body.email }, (err, data) => {
     if (data) {
       if (data.password == req.body.password) {
@@ -262,7 +289,7 @@ router.post("/login", (req, res, next) => {
   });
 });
 
-router.get("/profile", isAuthenticated, isHypeUser, async (req, res, next) => {
+router.get("/profile", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
   const taskData = await userTasks.findOne({ user_id: req.session.userId });
   const userData = await User.findOne({ unique_id: req.session.userId });
   var choosedTasksArray = taskData.choosed_tasks;
@@ -316,7 +343,7 @@ router.get("/profile", isAuthenticated, isHypeUser, async (req, res, next) => {
   });
 });
 
-router.get("/leaderboard", async (req, res, next) => {
+router.get("/leaderboard", isEnabled, async (req, res, next) => {
   const Database = await userTasks.aggregate([
     {
       $lookup: {

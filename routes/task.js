@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
 const userTasks = require("../models/userTasks");
+const IMP = require("../models/confidential")
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 
@@ -25,12 +26,23 @@ const isAdmin = (req, res, next) => {
 };
 
 const isHypeUser = (req, res, next) => {
-  if (req.session.hypertextUser === true){
+  if (req.session.hypertextUser){
     res.json({ "code": 403, "message": "Forbidden" })
+  } else {
+    next();
   }
 }
 
-router.get("/:id", isHypeUser, (req, res, next) => {
+const isEnabled = async (req, res, next) => {
+  const data = await IMP.findOne({ power_admin: 1 });
+  if(!data.competition_enabled){
+    res.json({ "code": 403, "message": "Competition Has Not Started Yet. Please wait until 1st october" })
+  } else {
+    next();
+  }
+}
+
+router.get("/:id", isEnabled, (req, res, next) => {
   Tasks.findOne({ task_id: req.params.id }, (err, data) => {
     if (!data) {
       res.send("No task was found with the given ID");
@@ -74,7 +86,7 @@ router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
   });
 });
 
-router.post("/choose/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
+router.post("/choose/:id", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
   const task = await Tasks.findOne({ task_id: req.params.id });
   if (!task) {
     res.sendStatus(404);
@@ -102,7 +114,7 @@ router.post("/choose/:id", isAuthenticated, isHypeUser, async (req, res, next) =
   }
 });
 
-router.post("/submit/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
+router.post("/submit/:id", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
   if (!userData) {
     return res.send("User does not exists in the database");
@@ -175,7 +187,7 @@ router.post("/submit/:id", isAuthenticated, isHypeUser, async (req, res, next) =
   }
 });
 
-router.post("/resubmit/:id", isAuthenticated, isHypeUser, async (req, res, next) => {
+router.post("/resubmit/:id", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
   const userData = await userTasks.findOne({ user_id: req.session.userId });
   if (!userData) {
     return res.send("User does not exists in the database");

@@ -669,4 +669,70 @@ router.post("/competition/disable", isAuthenticated, isAdmin, async(req, res, ne
   res.redirect("/admin/power")
 })
 
+router.get("/email/send", isAuthenticated, isAdmin, async(req, res, next) => {
+  res.render("email")
+})
+
+router.post("/email/send/bits", isAuthenticated, isAdmin, async(req, res, next) => {
+  const user_data = await User.find({ bitsUser: true });
+  const emails = user_data.map(function (data) {
+    return data.email
+  });
+
+  console.log(emails)
+  async function main() {
+    let transporter = nodemailer.createTransport({
+      host: "smtp.mail.yahoo.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "pasindudushan07@yahoo.com",
+        pass: "sjrbeghvrlhorwnn",
+      },
+    });
+
+    let info = await transporter.sendMail({
+      from: '"BITS 22" <pasindudushan07@yahoo.com>',
+      to: emails,
+      subject: req.body.subject,
+      text: req.body.message, // plain text body
+    });
+
+    console.log("Message sent: %s", info.messageId);
+  }
+  main().catch(console.error);
+  res.redirect("/admin/email/send")
+})
+
+router.post("/email/send/hypertext", isAuthenticated, isAdmin, async(req, res, next) => {
+  const user_data = await User.find({ hypertextUser: true });
+  const emails = user_data.map(function (data) {
+    return data.email
+  });
+
+  console.log(emails)
+  async function main() {
+    let transporter = nodemailer.createTransport({
+      host: "smtp.mail.yahoo.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "pasindudushan07@yahoo.com",
+        pass: "sjrbeghvrlhorwnn",
+      },
+    });
+
+    let info = await transporter.sendMail({
+      from: '"BITS 22" <pasindudushan07@yahoo.com>',
+      to: emails,
+      subject: req.body.subject,
+      text: req.body.message, // plain text body
+    });
+
+    console.log("Message sent: %s", info.messageId);
+  }
+  main().catch(console.error);
+  res.redirect("/admin/email/send")
+})
+
 module.exports = router;
