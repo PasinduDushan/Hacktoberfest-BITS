@@ -4,7 +4,8 @@ const User = require("../models/user");
 const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Tests = require("../models/tests");
-const IMP = require("../models/confidential")
+const Admin = require("../models/admin");
+const IMP = require("../models/confidential");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 require("dotenv").config();
@@ -20,21 +21,24 @@ const isAuthenticated = (req, res, next) => {
 };
 
 const isHypeUser = (req, res, next) => {
-  if (req.session.hypertextUser === true){
-    res.json({ "code": 403, "message": "Forbidden" })
+  if (req.session.hypertextUser === true) {
+    res.json({ code: 403, message: "Forbidden" });
   } else {
     next();
   }
-}
+};
 
 const isEnabled = async (req, res, next) => {
   const data = await IMP.findOne({ power_admin: 1 });
-  if(!data.competition_enabled){
-    res.json({ "code": 403, "message": "Competition Has Not Started Yet. Please wait until 1st october" })
+  if (!data.competition_enabled) {
+    res.json({
+      code: 403,
+      message: "Competition Has Not Started Yet. Please wait until 1st october",
+    });
   } else {
     next();
   }
-}
+};
 
 router.get("/", (req, res, next) => {
   return res.render("index.ejs");
@@ -70,7 +74,7 @@ router.post("/signup", async (req, res, next) => {
             let bitshype = false;
             let hype = false;
 
-            if(req.body.competition === 'bitshype'){
+            if (req.body.competition === "bitshype") {
               bitshype = true;
             } else {
               hype = true;
@@ -89,7 +93,7 @@ router.post("/signup", async (req, res, next) => {
               passwordConf: personInfo.passwordConf,
               adminUser: false,
               bitsUser: bitshype,
-              hypertextUser: hype
+              hypertextUser: hype,
             });
 
             let newUserTasks = new userTasks({
@@ -146,7 +150,7 @@ router.post("/signup", async (req, res, next) => {
 
             newPerson.save((err, Person) => {
               if (err) console.log(err);
-              else if(bitshype === true){
+              else if (bitshype === true) {
                 async function main() {
                   let transporter = nodemailer.createTransport({
                     host: "smtp.mail.yahoo.com",
@@ -168,7 +172,7 @@ router.post("/signup", async (req, res, next) => {
                   console.log("Message sent: %s", info.messageId);
                 }
                 main().catch(console.error);
-              } else if(hype === true){
+              } else if (hype === true) {
                 async function main() {
                   let transporter = nodemailer.createTransport({
                     host: "smtp.mail.yahoo.com",
@@ -206,64 +210,75 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-router.get("/tasks", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
-  const tasks = await Tasks.find();
-  const user_tasks = await userTasks.findOne({ user_id: req.session.userId });
-  const approved = user_tasks.approved_tasks;
-  const declined = user_tasks.declined_tasks;
-  const pending = user_tasks.pending_tasks;
-  const approvedArray = approved.map(function (data){
-    return data.task_id
-  });
-  const declineArray = declined.map(function (data){
-    return data.task_id
-  });
-  const pendingArray = pending.map(function (data){
-    return data.task_id
-  });
-  console.log(approvedArray);
-  res.render("taskdata", {
-    tasks: tasks,
-    approvedArray: approvedArray,
-    declineArray: declineArray,
-    pendingArray: pendingArray
-  });
-});
+router.get(
+  "/tasks",
+  isEnabled,
+  isAuthenticated,
+  isHypeUser,
+  async (req, res, next) => {
+    const tasks = await Tasks.find();
+    const user_tasks = await userTasks.findOne({ user_id: req.session.userId });
+    const approved = user_tasks.approved_tasks;
+    const declined = user_tasks.declined_tasks;
+    const pending = user_tasks.pending_tasks;
+    const approvedArray = approved.map(function (data) {
+      return data.task_id;
+    });
+    const declineArray = declined.map(function (data) {
+      return data.task_id;
+    });
+    const pendingArray = pending.map(function (data) {
+      return data.task_id;
+    });
 
-router.get("/onlinetest", isEnabled, isAuthenticated, async (req, res, next) => {
-  const user_data = await User.findOne({ unique_id: req.session.userId });
-  const test_data = await Tests.find();
-  const str = user_data.grade;
-
-  const replaced = str.replace(/\D/g, '');
-
-  let user_type;
-  if(replaced >= 6 && replaced <= 9 ){
-    user_type = "junior";
-  } else if(replaced == 10 || replaced == 11 || replaced == 1000){
-    user_type = "senior";
+    res.render("taskdata", {
+      tasks: tasks,
+      approvedArray: approvedArray,
+      declineArray: declineArray,
+      pendingArray: pendingArray,
+    });
   }
+);
 
-  const filteredQuiz = test_data
-  .filter(function (data) {
-    return data.test_type === user_type;
-  })
-  .map(function (data) {
-    return {
-      id: data._id,
-      createdAt: data.createdAt,
-      test_id: data.test_id,
-      test_name: data.test_name,
-      test_description: data.test_description,
-      test_link: data.test_link,
-      test_enabled: data.testEnabled,
-    };
-  });
+router.get(
+  "/onlinetest",
+  isEnabled,
+  isAuthenticated,
+  async (req, res, next) => {
+    const user_data = await User.findOne({ unique_id: req.session.userId });
+    const test_data = await Tests.find();
+    const str = user_data.grade;
 
-  res.render("onlinetests", {
-    filteredQuiz:filteredQuiz
-  });
-});
+    const replaced = str.replace(/\D/g, "");
+
+    let user_type;
+    if (replaced >= 6 && replaced <= 9) {
+      user_type = "junior";
+    } else if (replaced == 10 || replaced == 11 || replaced == 1000) {
+      user_type = "senior";
+    }
+
+    const filteredQuiz = test_data
+      .filter(function (data) {
+        return data.test_type === user_type;
+      })
+      .map(function (data) {
+        return {
+          id: data._id,
+          createdAt: data.createdAt,
+          test_id: data.test_id,
+          test_name: data.test_name,
+          test_description: data.test_description,
+          test_link: data.test_link,
+          test_enabled: data.testEnabled,
+        };
+      });
+
+    res.render("onlinetests", {
+      filteredQuiz: filteredQuiz,
+    });
+  }
+);
 
 router.get("/login", isEnabled, (req, res, next) => {
   return res.render("login.ejs");
@@ -289,63 +304,93 @@ router.post("/login", isEnabled, (req, res, next) => {
   });
 });
 
-router.get("/profile", isEnabled, isAuthenticated, isHypeUser, async (req, res, next) => {
-  const taskData = await userTasks.findOne({ user_id: req.session.userId });
-  const userData = await User.findOne({ unique_id: req.session.userId });
-  var choosedTasksArray = taskData.choosed_tasks;
-  var approvedTasksArray = taskData.approved_tasks;
-  var declinedTasksArray = taskData.declined_tasks;
-  var pendingTasksArray = taskData.pending_tasks;
+router.get(
+  "/profile",
+  isEnabled,
+  isAuthenticated,
+  isHypeUser,
+  async (req, res, next) => {
+    const taskData = await userTasks.findOne({ user_id: req.session.userId });
+    const userData = await User.findOne({ unique_id: req.session.userId });
+    var choosedTasksArray = taskData.choosed_tasks;
+    var approvedTasksArray = taskData.approved_tasks;
+    var declinedTasksArray = taskData.declined_tasks;
+    var pendingTasksArray = taskData.pending_tasks;
 
-  const choosedResults = choosedTasksArray.map(function (data) {
-    return {
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
+    const choosedResults = choosedTasksArray.map(function (data) {
+      return {
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+      };
+    });
 
-  const approvedResults = approvedTasksArray.map(function (data) {
-    return {
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
+    const approvedResults = approvedTasksArray.map(function (data) {
+      return {
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+      };
+    });
 
-  const declinedResults = declinedTasksArray.map(function (data) {
-    return {
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-      denial_reason: data.denial_reason,
-    };
-  });
+    const declinedResults = declinedTasksArray.map(function (data) {
+      return {
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+        denial_reason: data.denial_reason,
+      };
+    });
 
-  const pendingResults = pendingTasksArray.map(function (data) {
-    return {
-      task_title: data.task_title,
-      task_description: data.task_description,
-      task_id: data.task_id,
-      task_category: data.task_category,
-    };
-  });
+    const pendingResults = pendingTasksArray.map(function (data) {
+      return {
+        task_title: data.task_title,
+        task_description: data.task_description,
+        task_id: data.task_id,
+        task_category: data.task_category,
+      };
+    });
 
-  res.render("data", {
-    choosedResults: choosedResults,
-    approvedResults: approvedResults,
-    declinedResults: declinedResults,
-    pendingResults: pendingResults,
-    userData: userData,
-  });
-});
+    res.render("data", {
+      choosedResults: choosedResults,
+      approvedResults: approvedResults,
+      declinedResults: declinedResults,
+      pendingResults: pendingResults,
+      userData: userData,
+    });
+  }
+);
 
-router.post("/test/submit", isEnabled, isAuthenticated, isHypeUser, async(req, res, next) => {
-  // Have to code here
-});
+router.post(
+  "/test/submit",
+  isEnabled,
+  isAuthenticated,
+  isHypeUser,
+  async (req, res, next) => {
+    const user_data = await User.findOne({ unique_id: req.session.userId });
+    Admin.findOne({ number: 1 })
+      .then((task) => {
+        task.quizData.push({
+          quiz_name: req.body.name,
+          quiz_id: req.body.id,
+          username: user_data.username,
+          userId: user_data.unique_id,
+        });
+        task
+          .save()
+          .then(() => {
+            return "Success";
+          })
+          .catch(console.log);
+      })
+      .catch(console.log);
+
+    res.redirect(req.body.link);
+  }
+);
 
 router.get("/leaderboard", isEnabled, isHypeUser, async (req, res, next) => {
   const Database = await userTasks.aggregate([
@@ -364,10 +409,6 @@ router.get("/leaderboard", isEnabled, isHypeUser, async (req, res, next) => {
       $sort: { total_points: -1 },
     },
   ]);
-
-  Database.forEach((data) => {
-    console.log(`${data.same[0].username} : ${data.total_points}`);
-  });
 
   res.render("leaderboard", {
     db: Database,

@@ -19,12 +19,15 @@
                     <h5 class="card-title"><%= data.test_name %></h5>
                     <p class="card-text"><%= data.test_description %></p>
                     <p class="card-text">Test Date: <%= data.createdAt %></p>
-                    <% if(data.testEnabled){ %>
-                      <form action="<%= data.test_link %>" onsubmit="return submitForm2(this);">
-                         <button type="submit" class="btn btn-primary">Start the Quiz</button><br><br>
-                      </form>
-                    <% } else{ %>
-                      <a href="<%= data.test_link %>" class="btn btn-primary disabled" aria-disabled="true">Start the Quiz</a><br><br>
+                    <% if(data.test_enabled){ %>
+                      <form action="/test/submit"  method="post" onsubmit="return submitForm2(this);">
+                        <input type="hidden" id="link" name="link" value="<%= data.test_link %>" />
+                        <input type="hidden" id="name" name="name" value="<%= data.test_name %>" />
+                        <input type="hidden" id="id" name="id" value="<%= data.test_id %>" />
+                        <button type="submit" class="btn btn-primary">Start the Quiz</button><br><br>
+                     </form>
+                    <% } else { %>
+                      <a href="/test/submit" class="btn btn-primary disabled" aria-disabled="true">Start the Quiz</a><br><br>
                     <% } %>
                 </div>
                 </div>

@@ -12,6 +12,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
+            <th scope="col">No. Of Tasks Accepted</th>
             <th scope="col">Grade</th>
             <th scope="col">Points</th>
           </tr>
@@ -21,7 +22,8 @@
             <tr>
               <th scope="row"><%= i++ %></th>
               <td><%= data.same[0].fullname %></td>
-              <td><%= data.same[0].grade %></td>
+              <td><%= data.approved_tasks.length %></td>
+              <td><%= String(data.same[0].grade).replace(/1000/g, ' ') %></td>
               <td><%= data.total_points %></td>
             </tr>
           <% }) %>
