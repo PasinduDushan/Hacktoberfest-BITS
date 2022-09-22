@@ -5,7 +5,7 @@ const userTasks = require("../models/userTasks");
 const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 const Tests = require("../models/tests");
-const IMP = require("../models/confidential")
+const IMP = require("../models/confidential");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
@@ -74,32 +74,32 @@ router.post(
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
       const choosedResults = pendingTasksArray
-      .filter(function (data) {
-        return data.task_id === parseInt(req.params.id);
-      })
-      .map(function (data) {
-        return {
-          id: data._id,
-          task_title: data.task_title,
-          task_description: data.task_description,
-          task_id: data.task_id,
-          task_category: data.task_category,
-        };
-      });
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+          };
+        });
 
       const adminChoosedResults = adminTasksArray
-      .filter(function (data) {
-        return data.task_id === parseInt(req.params.id);
-      })
-      .map(function (data) {
-        return {
-          id: data._id,
-          task_title: data.task_title,
-          task_description: data.task_description,
-          task_id: data.task_id,
-          task_category: data.task_category,
-        };
-      });
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+          };
+        });
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -128,9 +128,6 @@ router.post(
           },
         },
       ]);
-
-      console.log(choosedResults[0].id)
-      console.log(adminChoosedResults[0].id)
 
       await userTasks.update(
         { _id: taskData._id },
@@ -183,32 +180,32 @@ router.post(
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
       const choosedResults = pendingTasksArray
-      .filter(function (data) {
-        return data.task_id === parseInt(req.params.id);
-      })
-      .map(function (data) {
-        return {
-          id: data._id,
-          task_title: data.task_title,
-          task_description: data.task_description,
-          task_id: data.task_id,
-          task_category: data.task_category,
-        };
-      });
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+          };
+        });
 
       const adminChoosedResults = adminTasksArray
-      .filter(function (data) {
-        return data.task_id === parseInt(req.params.id);
-      })
-      .map(function (data) {
-        return {
-          id: data._id,
-          task_title: data.task_title,
-          task_description: data.task_description,
-          task_id: data.task_id,
-          task_category: data.task_category,
-        };
-      });
+        .filter(function (data) {
+          return data.task_id === parseInt(req.params.id);
+        })
+        .map(function (data) {
+          return {
+            id: data._id,
+            task_title: data.task_title,
+            task_description: data.task_description,
+            task_id: data.task_id,
+            task_category: data.task_category,
+          };
+        });
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -265,84 +262,91 @@ router.post(
   }
 );
 
+router.post("/test/add", isAuthenticated, isAdmin, async (req, res, next) => {
+  let c;
+  Tests.findOne({}, async (err, data) => {
+    if (data) {
+      const testdata = await Tests.find().limit(1).sort({ $natural: -1 });
+      c = testdata[0].test_id + 100;
+    } else {
+      c = 100;
+    }
+
+    let newTest = new Tests({
+      test_id: c,
+      test_name: req.body.name,
+      test_description: req.body.description,
+      createdAt: new Date(req.body.date),
+      test_grade: req.body.grade,
+      test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      testEnabled: false,
+      test_type: req.body.type,
+    });
+
+    newTest.save((err, Data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Successfully added records for user tasks");
+      }
+    });
+
+    res.redirect("/admin");
+  });
+});
+
+router.get("/tests", isAuthenticated, isAdmin, async (req, res, next) => {
+  const test_data = await Tests.find();
+  res.render("tests", {
+    test_data: test_data,
+  });
+});
+
 router.post(
-  "/test/add",
+  "/test/enable/:id",
   isAuthenticated,
   isAdmin,
   async (req, res, next) => {
-    let c;
-    Tests.findOne({}, async (err, data) => {
-      if (data) {
-        const testdata = await Tests.find().limit(1).sort({ $natural: -1 });
-        c = testdata[0].test_id + 100;
-      } else {
-        c = 100;
-      }
-
-      let newTest = new Tests({
-        test_id: c,
-        test_name: req.body.name,
-        test_description: req.body.description,
-        createdAt: new Date(req.body.date),
-        test_grade: req.body.grade,
-        test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        testEnabled: false,
-        test_type: req.body.type
-      });
-
-      newTest.save((err, Data) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Successfully added records for user tasks");
+    const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
+    if (!test_data) {
+      res.json({ code: 404, message: "Test not found" });
+    } else {
+      await Tests.updateOne(
+        {
+          test_id: parseInt(req.params.id),
+        },
+        {
+          testEnabled: true,
+          test_link: req.body.link,
         }
-      });
-
-      res.redirect("/admin");
-    });
+      );
+      res.redirect("/admin/tests");
+    }
   }
 );
 
-router.get("/tests", isAuthenticated, isAdmin, async(req, res, next) => {
-  const test_data = await Tests.find();
-  res.render("tests", {
-    test_data: test_data
-  })
-})
-
-router.post("/test/enable/:id", isAuthenticated, isAdmin, async(req, res, next) => {
-  const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
-  if(!test_data) {
-    res.json({ "code": 404, "message": "Test not found" });
-  } else {
-    await Tests.updateOne(
-      { 
-        test_id: parseInt(req.params.id) 
-      }, 
-      { 
-        testEnabled: true,
-        test_link: req.body.link 
-      });
-    res.redirect("/admin/tests");
+router.post(
+  "/test/disable/:id",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
+    if (!test_data) {
+      res.json({ code: 404, message: "Test not found" });
+    } else {
+      await Tests.updateOne(
+        {
+          test_id: parseInt(req.params.id),
+        },
+        {
+          testEnabled: false,
+          test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        }
+      );
+      res.redirect("/admin/tests");
+    }
   }
-})
-
-router.post("/test/disable/:id", isAuthenticated, isAdmin, async(req, res, next) => {
-  const test_data = await Tests.findOne({ test_id: parseInt(req.params.id) });
-  if(!test_data) {
-    res.json({ "code": 404, "message": "Test not found" });
-  } else {
-    await Tests.updateOne(
-      { 
-        test_id: parseInt(req.params.id) 
-      }, 
-      { 
-        testEnabled: false,
-        test_link: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-      });
-    res.redirect("/admin/tests");
-  }
-})
+);
 
 router.get(
   "/tasks/coding",
@@ -366,13 +370,9 @@ router.get(
         };
       });
 
-    console.log(codingTasksArray);
-    console.log("-----------------------");
     const uniqueArray = [
       ...new Map(codingTasksArray.map((m) => [m.task_id, m])).values(),
     ];
-    console.log(uniqueArray);
-    console.log("-----------------------");
 
     let length = [];
 
@@ -420,13 +420,9 @@ router.get(
         };
       });
 
-    console.log(designTasksArray);
-    console.log("-----------------------");
     const uniqueArray = [
       ...new Map(designTasksArray.map((m) => [m.task_id, m])).values(),
     ];
-    console.log(uniqueArray);
-    console.log("-----------------------");
 
     let length = [];
 
@@ -474,13 +470,9 @@ router.get(
         };
       });
 
-    console.log(exploreTasksArray);
-    console.log("-----------------------");
     const uniqueArray = [
       ...new Map(exploreTasksArray.map((m) => [m.task_id, m])).values(),
     ];
-    console.log(uniqueArray);
-    console.log("-----------------------");
 
     let length = [];
 
@@ -626,113 +618,206 @@ router.get(
   }
 );
 
-router.get("/power", isAuthenticated, isAdmin, async(req, res, next) => {
+router.get("/power", isAuthenticated, isAdmin, async (req, res, next) => {
   const data = await IMP.findOne({ power_admin: 1 });
-  if(1 !== req.session.userId){
-    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
+  if (1 !== req.session.userId) {
+    return res.json({
+      code: 403,
+      message: "You are not authorized to access this page",
+    });
   } else {
     res.render("power", {
-      data: data
+      data: data,
     });
   }
-})
+});
 
-router.post("/competition/enable", isAuthenticated, isAdmin, async(req, res, next) => {
-  if(1 !== req.session.userId){
-    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
-  } else {
-    await IMP.updateOne(
+router.post(
+  "/competition/enable",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    if (1 !== req.session.userId) {
+      return res.json({
+        code: 403,
+        message: "You are not authorized to access this page",
+      });
+    } else {
+      await IMP.updateOne(
+        {
+          power_admin: 1,
+        },
+        {
+          competition_enabled: true,
+        }
+      );
+    }
+
+    res.redirect("/admin/power");
+  }
+);
+
+router.post(
+  "/competition/disable",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    if (1 !== req.session.userId) {
+      return res.json({
+        code: 403,
+        message: "You are not authorized to access this page",
+      });
+    } else {
+      await IMP.updateOne(
+        {
+          power_admin: 1,
+        },
+        {
+          competition_enabled: false,
+        }
+      );
+    }
+
+    res.redirect("/admin/power");
+  }
+);
+
+router.get("/email/send", isAuthenticated, isAdmin, async (req, res, next) => {
+  res.render("email");
+});
+
+router.post(
+  "/email/send/bits",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const user_data = await User.find({ bitsUser: true });
+    const emails = user_data.map(function (data) {
+      return data.email;
+    });
+
+    async function main() {
+      let transporter = nodemailer.createTransport({
+        host: "smtp.mail.yahoo.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "pasindudushan07@yahoo.com",
+          pass: "sjrbeghvrlhorwnn",
+        },
+      });
+
+      let info = await transporter.sendMail({
+        from: '"BITS 22" <pasindudushan07@yahoo.com>',
+        to: emails,
+        subject: req.body.subject,
+        text: req.body.message, // plain text body
+      });
+
+      console.log("Message sent: %s", info.messageId);
+    }
+    main().catch(console.error);
+    res.redirect("/admin/email/send");
+  }
+);
+
+router.post(
+  "/email/send/hypertext",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const user_data = await User.find({ hypertextUser: true });
+    const emails = user_data.map(function (data) {
+      return data.email;
+    });
+
+    async function main() {
+      let transporter = nodemailer.createTransport({
+        host: "smtp.mail.yahoo.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: "pasindudushan07@yahoo.com",
+          pass: "sjrbeghvrlhorwnn",
+        },
+      });
+
+      let info = await transporter.sendMail({
+        from: '"BITS 22" <pasindudushan07@yahoo.com>',
+        to: emails,
+        subject: req.body.subject,
+        text: req.body.message, // plain text body
+      });
+
+      console.log("Message sent: %s", info.messageId);
+    }
+    main().catch(console.error);
+    res.redirect("/admin/email/send");
+  }
+);
+
+router.get(
+  "/test/submittions",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const data = await Admin.findOne({ number: 1 });
+    const quiz = data.quizData;
+
+    const quizArray = quiz.map(function (data) {
+      return {
+        id: data._id,
+        quiz_name: data.quiz_name,
+        quiz_id: data.quiz_id,
+        username: data.username,
+        user_id: data.userId,
+      };
+    });
+
+    res.render("submittions", {
+      quizArray: quizArray,
+    });
+  }
+);
+
+router.post(
+  "/test/points/:id/:userid",
+  isAuthenticated,
+  isAdmin,
+  async (req, res, next) => {
+    const Admindata = await Admin.findOne({ number: 1 });
+
+    var adminTasksArray = Admindata.quizData;
+
+    const adminChoosedResults = adminTasksArray
+      .filter(function (data) {
+        return data.quiz_id === parseInt(req.params.id);
+      })
+      .map(function (data) {
+        return {
+          id: data._id,
+          quiz_title: data.quiz_name,
+          quiz_id: data.quiz_id,
+        };
+      });
+
+    await userTasks.updateOne({ user_id: req.params.userid }, [
       {
-        power_admin: 1
-      },{
-        competition_enabled: true
-      }
-    )
-  }
-
-  res.redirect("/admin/power")
-})
-
-router.post("/competition/disable", isAuthenticated, isAdmin, async(req, res, next) => {
-  if(1 !== req.session.userId){
-    return res.json({ "code": 403, "message": "You are not authorized to access this page" })
-  } else {
-    await IMP.updateOne(
-      {
-        power_admin: 1
-      },{
-        competition_enabled: false
-      }
-    )
-  }
-
-  res.redirect("/admin/power")
-})
-
-router.get("/email/send", isAuthenticated, isAdmin, async(req, res, next) => {
-  res.render("email")
-})
-
-router.post("/email/send/bits", isAuthenticated, isAdmin, async(req, res, next) => {
-  const user_data = await User.find({ bitsUser: true });
-  const emails = user_data.map(function (data) {
-    return data.email
-  });
-
-  console.log(emails)
-  async function main() {
-    let transporter = nodemailer.createTransport({
-      host: "smtp.mail.yahoo.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "pasindudushan07@yahoo.com",
-        pass: "sjrbeghvrlhorwnn",
+        $set: {
+          total_points: {
+            $add: ["$total_points", parseInt(req.body.points)],
+          },
+        },
       },
-    });
+    ]);
 
-    let info = await transporter.sendMail({
-      from: '"BITS 22" <pasindudushan07@yahoo.com>',
-      to: emails,
-      subject: req.body.subject,
-      text: req.body.message, // plain text body
-    });
+    await Admin.update(
+      { _id: Admindata._id },
+      { $pull: { quizData: { _id: adminChoosedResults[0].id } } }
+    );
 
-    console.log("Message sent: %s", info.messageId);
+    res.redirect("/admin/test/submittions");
   }
-  main().catch(console.error);
-  res.redirect("/admin/email/send")
-})
-
-router.post("/email/send/hypertext", isAuthenticated, isAdmin, async(req, res, next) => {
-  const user_data = await User.find({ hypertextUser: true });
-  const emails = user_data.map(function (data) {
-    return data.email
-  });
-
-  console.log(emails)
-  async function main() {
-    let transporter = nodemailer.createTransport({
-      host: "smtp.mail.yahoo.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "pasindudushan07@yahoo.com",
-        pass: "sjrbeghvrlhorwnn",
-      },
-    });
-
-    let info = await transporter.sendMail({
-      from: '"BITS 22" <pasindudushan07@yahoo.com>',
-      to: emails,
-      subject: req.body.subject,
-      text: req.body.message, // plain text body
-    });
-
-    console.log("Message sent: %s", info.messageId);
-  }
-  main().catch(console.error);
-  res.redirect("/admin/email/send")
-})
+);
 
 module.exports = router;

@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bootstrap demo</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script type="module" src="https://md-block.verou.me/md-block.js"></script>
   </head>
   <body>
-    <center><p><h3><%= title %></h3></p><br><p><%= description %></p></center>
+    <center><p><h3><u><%= title %></u></h3></p><br><md-block><%= description %></md-block></center>
     <center><form action="/task/choose/<%= id %>" method="post">
       <button type="submit" class="btn btn-primary">Choose Task</button><br>
     </form></center>
