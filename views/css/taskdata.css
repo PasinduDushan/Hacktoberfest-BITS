@@ -161,11 +161,44 @@ body {
   flex-direction: row;
   align-items: center;
 }
+.tasks .task-item .ti-type div {
+  display: flex;
+  align-items: center;
+}
+.tasks .task-item .ti-type i {
+  font-size: 0.8em;
+}
 .tasks .task-item .ti-type .tity-divider {
   background-color: rgba(220, 231, 254, 0.7725490196);
   width: 1px;
   height: 1.7em;
   margin: 0 0.5em;
+}
+.tasks .task-item .ti-status {
+  position: absolute;
+  right: 0;
+  bottom: 2.5em;
+  padding: 0.4em 2em;
+  width: 115px;
+  border-radius: 100px 0 0 100px;
+  font-size: 0.8em;
+  color: #DCE7FE;
+  display: none;
+}
+.tasks .task-item .ti-status.ts-red {
+  background: linear-gradient(110deg, #A70707, #FC2828);
+  box-shadow: 0 0 300px 10px #A70707;
+  display: initial;
+}
+.tasks .task-item .ti-status.ts-green {
+  background: linear-gradient(110deg, #199607, #19C346);
+  box-shadow: 0 0 300px 10px #199607;
+  display: initial;
+}
+.tasks .task-item .ti-status.ts-yellow {
+  background: linear-gradient(110deg, #DE8D13, #CB9D00);
+  box-shadow: 0 0 300px 10px #DE8D13;
+  display: initial;
 }
 .tasks .task-filter {
   width: 40%;
@@ -177,7 +210,7 @@ body {
   margin-left: auto;
   display: flex;
   flex-direction: column;
-  justify-content: end;
+  justify-content: flex-end;
   gap: 0.5em;
   font-size: 1.1em;
 }

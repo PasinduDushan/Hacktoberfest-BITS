@@ -1,4 +1,6 @@
-<div class="task-item" data-task-id="1005">
+<% let icon = {"CODING": "fa-solid fa-code", "DESIGN": "fa-solid fa-pen", "EXPLORE": "fa-solid fa-magnifying-glass"} %>
+
+<div class="task-item" data-task-id="<%=data.task_id%>">
 
     <div class="ti-bg-acnt tibg-tr"></div>
     <div class="ti-bg-acnt tibg-bl"></div>
@@ -13,9 +15,13 @@
     </div>
 
     <div class="ti-type">
-      <div><i></i>X</div>
+      <div><i class="<%=icon[data.task_category]%>"></i></div>
       <div class="tity-divider"></div>
       <div><p><%=data.task_id%></p></div>
+    </div>
+
+    <div class="ti-status">
+      <p class="ti-status-text">N/A</p>
     </div>
     
 </div>
