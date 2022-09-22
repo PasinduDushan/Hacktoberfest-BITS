@@ -79,6 +79,46 @@ body {
   padding: 4em 6em 0 6em;
 }
 
+.task-search {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 5em;
+  font-size: 1em;
+}
+.task-search .searchbar {
+  background-color: #293045;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.task-search .searchbar .searchbar-icon {
+  padding: 0 1.5em;
+  color: #2788F7;
+}
+.task-search .searchbar input {
+  font-size: inherit;
+  color: rgba(219, 229, 255, 0.7568627451);
+  width: 40vw;
+  padding: 0.8em 1.5em 0.8em 0;
+  border-radius: 0 8px 8px 0;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+.task-search .searchbar input::-moz-placeholder {
+  font-style: italic;
+  color: #7D8AB0;
+}
+.task-search .searchbar input:-ms-input-placeholder {
+  font-style: italic;
+  color: #7D8AB0;
+}
+.task-search .searchbar input::placeholder {
+  font-style: italic;
+  color: #7D8AB0;
+}
+
 .tasks {
   display: flex;
   flex-direction: row;
@@ -96,6 +136,9 @@ body {
   padding: 2.2em 3em;
   margin: 0 2em;
   overflow: hidden;
+}
+.tasks .task-item.task-filtered-search, .tasks .task-item.task-filtered-cat, .tasks .task-item.task-filtered-status {
+  display: none;
 }
 .tasks .task-item .ti-bg-acnt {
   position: absolute;
@@ -184,6 +227,7 @@ body {
   font-size: 0.8em;
   color: #DCE7FE;
   display: none;
+  transition: 0.2s;
 }
 .tasks .task-item .ti-status.ts-red {
   background: linear-gradient(110deg, #A70707, #FC2828);
