@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -8,9 +9,8 @@ const Admin = require("../models/admin");
 const IMP = require("../models/confidential");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
-require("dotenv").config();
 
-const id = "16pFG1D9Qq1Q4mb-rHz-cXYVRZdUABHC1JQVnMG5jWvs";
+const id = process.env.REGISTER_ID;
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -153,17 +153,17 @@ router.post("/signup", async (req, res, next) => {
               else if (bitshype === true) {
                 async function main() {
                   let transporter = nodemailer.createTransport({
-                    host: "smtp.mail.yahoo.com",
-                    port: 465,
+                    host: process.env.SMTP_SERVER,
+                    port: parseInt(process.env.SMTP_PORT),
                     secure: true,
                     auth: {
-                      user: "pasindudushan07@yahoo.com",
-                      pass: "sjrbeghvrlhorwnn",
+                      user: process.env.USERNAME,
+                      pass: process.env.PASSWORD,
                     },
                   });
 
                   let info = await transporter.sendMail({
-                    from: '"BITS Organizing Community" <pasindudushan07@yahoo.com>',
+                    from: `"BITS Organizing Community" <${process.env.USERNAME}>`,
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
                     html: `<p>Hello there, Welcome to BITS'22 with Hypertext organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
@@ -175,17 +175,17 @@ router.post("/signup", async (req, res, next) => {
               } else if (hype === true) {
                 async function main() {
                   let transporter = nodemailer.createTransport({
-                    host: "smtp.mail.yahoo.com",
-                    port: 465,
+                    host: process.env.SMTP_SERVER,
+                    port: parseInt(process.env.SMTP_PORT),
                     secure: true,
                     auth: {
-                      user: "pasindudushan07@yahoo.com",
-                      pass: "sjrbeghvrlhorwnn",
+                      user: process.env.USERNAME,
+                      pass: process.env.PASSWORD,
                     },
                   });
 
                   let info = await transporter.sendMail({
-                    from: '"Hypertext Organizing Community" <pasindudushan07@yahoo.com>',
+                    from: `"Hypertext Organizing Community" <${process.env.USERNAME}>`,
                     to: personInfo.email,
                     subject: `Welcome ${personInfo.username}`,
                     html: `<p>Hello there, Welcome to Hypertext organized by ACICTS of Ananda College Colombo. Please verify all information below before continuing, If there are any issues please contact one of our site admins immediately. If everything is correct you are good to go.</b><br><br><b>Information Provided</b><ul><li>Username: ${personInfo.username}</li><li>School Name: ${personInfo.school}</li><li>Grade: ${personInfo.grade}</li><li>Email: ${personInfo.email}</li><li>Password: ********</li><li>BITS ID: bits22-${bits_id}</li></ul>`, // plain text body
@@ -456,33 +456,6 @@ router.post("/forgetpass", (req, res, next) => {
   });
 });
 
-// router.get("/uploadtest", (req, res, next) => {
-//   res.render("uploadtest")
-// })
-
-// router.post('/upload', upload.any(), async (req, res) => {
-//   try {
-//     const { body, files } = req;
-
-//     for (let f = 0; f < files.length; f += 1) {
-//       await uploadFile(files[f]);
-//     }
-
-//     console.log(body);
-//     res.status(200).send('Form Submitted');
-//   } catch (f) {
-//     res.send(f.message);
-//   }
-// });
-
-// const uuid = () => {
-//   return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
-//     var r = (Math.random() * 16) | 0,
-//       v = c == "x" ? r : (r & 0x3) | 0x8;
-//     return v.toString(16);
-//   });
-// };
-
 const com_id = () => {
   var val = Math.floor(1000 + Math.random() * 9000);
   return val;
@@ -502,43 +475,5 @@ const authentication = async () => {
   });
   return { sheets };
 };
-
-// const getDriveService = () => {
-//   const auth = new google.auth.GoogleAuth({
-//     keyFile: "drive.json",
-//     scopes: 'https://www.googleapis.com/auth/drive',
-//   });
-//   const drive = google.drive({ version: 'v3', auth });
-//   return { drive };
-// };
-
-// const uploadFile = async (fileObject) => {
-//   const bufferStream = new stream.PassThrough();
-//   bufferStream.end(fileObject.buffer);
-//   const { drive } = getDriveService();
-//   const { data } = await drive({ version: 'v3' }).files.create({
-//     media: {
-//       mimeType: fileObject.mimeType,
-//       body: bufferStream,
-//     },
-//     requestBody: {
-//       name: fileObject.originalname,
-//       parents: ['1IxnuvozpeOrGyrsgu53lSvZ4vQ_hD5eQ'],
-//     },
-//     fields: 'id,name',
-//   });
-//   console.log(`Uploaded file ${data.name} ${data.id}`);
-// };
-
-// function tConvert (time) {
-//   time = time.toString ().match (/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
-
-//   if (time.length > 1) {
-//     time = time.slice (1);
-//     time[5] = +time[0] < 12 ? 'AM' : 'PM';
-//     time[0] = +time[0] % 12 || 12;
-//   }
-//   return time.join ('');
-// }
 
 module.exports = router;

@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const User = require("../models/user");
@@ -10,9 +11,9 @@ const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-const coding_id = "1CcyAq-e2fdoYwHJOLBVO3iTvU_1FbxYWhojSYdt7MD0";
-const design_id = "106AlJ866sd3lr43W59_KtqjLrd5MxvgMR3yGeryYNbk";
-const explore_id = "1LUTs9vX2dMj1EbbemverbHUNqKEyGGbXk_m9zM877Vs";
+const coding_id = process.env.CODING_ID;
+const design_id = process.env.DESIGN_ID;
+const explore_id = process.env.EXPLORE_ID;
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -76,22 +77,22 @@ router.post(
       const taskData = await userTasks.findOne({ user_id: req.params.user });
       const Admindata = await Admin.findOne({ number: 1 });
 
-      var currentdate = new Date(); 
+      var currentdate = new Date();
 
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
-      var sheetDataArray = task_dat.sheetData
+      var sheetDataArray = task_dat.sheetData;
 
       const sheetResults = sheetDataArray
-      .filter(function(data){
-        return data.userId === userData.unique_id
-      })
-      .map(function (data) {
-        return {
-          userid: data.userId,
-          sheetid: data.sheetId
-        };
-      })
+        .filter(function (data) {
+          return data.userId === userData.unique_id;
+        })
+        .map(function (data) {
+          return {
+            userid: data.userId,
+            sheetid: data.sheetId,
+          };
+        });
 
       const choosedResults = pendingTasksArray
         .filter(function (data) {
@@ -122,28 +123,28 @@ router.post(
           };
         });
 
-        let type;
+      let type;
 
-        if(adminChoosedResults[0].task_category === "CODING"){
-          type = coding_id
-        } else if(adminChoosedResults[0].task_category === "DESIGN"){
-          type = design_id
-        } else if(adminChoosedResults[0].task_category === "EXPLORE"){
-          type = explore_id
-        }
+      if (adminChoosedResults[0].task_category === "CODING") {
+        type = coding_id;
+      } else if (adminChoosedResults[0].task_category === "DESIGN") {
+        type = design_id;
+      } else if (adminChoosedResults[0].task_category === "EXPLORE") {
+        type = explore_id;
+      }
 
-        (async () => {
-          try {
-            const { sheets } = await authentication();
-  
-            const writeReq = await sheets.spreadsheets.values.update({
-              spreadsheetId: type,
+      (async () => {
+        try {
+          const { sheets } = await authentication();
+
+          const writeReq = await sheets.spreadsheets.values.update({
+            spreadsheetId: type,
+            range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+            valueInputOption: "USER_ENTERED",
+            resource: {
               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
-              valueInputOption: "USER_ENTERED",
-              resource: {
-               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
-               majorDimension: "ROWS",
-               values: [
+              majorDimension: "ROWS",
+              values: [
                 [
                   currentdate,
                   userData.email,
@@ -152,23 +153,21 @@ router.post(
                   adminChoosedResults[0].project_url,
                   "No Feedback",
                   req.body.points,
-                  "Approved"
-                ]
-               ]
-              }
-            });
-  
-            if (writeReq.status === 200) {
-              console.log("Spreadsheet updated");
-            } else {
-              console.log(
-                "Somethign went wrong while updating the spreadsheet."
-              );
-            }
-          } catch (e) {
-            console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+                  "Approved",
+                ],
+              ],
+            },
+          });
+
+          if (writeReq.status === 200) {
+            console.log("Spreadsheet updated");
+          } else {
+            console.log("Somethign went wrong while updating the spreadsheet.");
           }
-        })();
+        } catch (e) {
+          console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+        }
+      })();
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -209,17 +208,17 @@ router.post(
 
       async function main() {
         let transporter = nodemailer.createTransport({
-          host: "smtp.mail.yahoo.com",
-          port: 465,
+          host: process.env.SMTP_SERVER,
+          port: parseInt(process.env.SMTP_PORT),
           secure: true,
           auth: {
-            user: "pasindudushan07@yahoo.com",
-            pass: "sjrbeghvrlhorwnn",
+            user: process.env.USERNAME,
+            pass: process.env.PASSWORD,
           },
         });
 
         let info = await transporter.sendMail({
-          from: '"BITS 22" <pasindudushan07@yahoo.com>',
+          from: `"BITS 22" <${process.env.USERNAME}>`,
           to: userData.email,
           subject: `Hello ${userData.username}`,
           html: `<p>Your task with the ID <b>${req.params.id}</b> has been accepted and will be counted in the competition.<br><br>- Good Luck -<br>BITS Task Reviewing Commitee</p>`, // plain text body
@@ -246,22 +245,22 @@ router.post(
       const taskData = await userTasks.findOne({ user_id: req.params.user });
       const Admindata = await Admin.findOne({ number: 1 });
 
-      var currentdate = new Date(); 
+      var currentdate = new Date();
 
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
-      var sheetDataArray = task_dat.sheetData
+      var sheetDataArray = task_dat.sheetData;
 
       const sheetResults = sheetDataArray
-      .filter(function(data){
-        return data.userId === userData.unique_id
-      })
-      .map(function (data) {
-        return {
-          userid: data.userId,
-          sheetid: data.sheetId
-        };
-      })
+        .filter(function (data) {
+          return data.userId === userData.unique_id;
+        })
+        .map(function (data) {
+          return {
+            userid: data.userId,
+            sheetid: data.sheetId,
+          };
+        });
 
       const choosedResults = pendingTasksArray
         .filter(function (data) {
@@ -292,28 +291,28 @@ router.post(
           };
         });
 
-        let type;
+      let type;
 
-        if(adminChoosedResults[0].task_category === "CODING"){
-          type = coding_id
-        } else if(adminChoosedResults[0].task_category === "DESIGN"){
-          type = design_id
-        } else if(adminChoosedResults[0].task_category === "EXPLORE"){
-          type = explore_id
-        }
+      if (adminChoosedResults[0].task_category === "CODING") {
+        type = coding_id;
+      } else if (adminChoosedResults[0].task_category === "DESIGN") {
+        type = design_id;
+      } else if (adminChoosedResults[0].task_category === "EXPLORE") {
+        type = explore_id;
+      }
 
-        (async () => {
-          try {
-            const { sheets } = await authentication();
-  
-            const writeReq = await sheets.spreadsheets.values.update({
-              spreadsheetId: type,
+      (async () => {
+        try {
+          const { sheets } = await authentication();
+
+          const writeReq = await sheets.spreadsheets.values.update({
+            spreadsheetId: type,
+            range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+            valueInputOption: "USER_ENTERED",
+            resource: {
               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
-              valueInputOption: "USER_ENTERED",
-              resource: {
-               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
-               majorDimension: "ROWS",
-               values: [
+              majorDimension: "ROWS",
+              values: [
                 [
                   currentdate,
                   userData.email,
@@ -322,23 +321,21 @@ router.post(
                   adminChoosedResults[0].project_url,
                   req.body.denialreason,
                   "0",
-                  "Declined"
-                ]
-               ]
-              }
-            });
-  
-            if (writeReq.status === 200) {
-              console.log("Spreadsheet updated");
-            } else {
-              console.log(
-                "Somethign went wrong while updating the spreadsheet."
-              );
-            }
-          } catch (e) {
-            console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+                  "Declined",
+                ],
+              ],
+            },
+          });
+
+          if (writeReq.status === 200) {
+            console.log("Spreadsheet updated");
+          } else {
+            console.log("Somethign went wrong while updating the spreadsheet.");
           }
-        })();
+        } catch (e) {
+          console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+        }
+      })();
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -370,17 +367,17 @@ router.post(
 
       async function main() {
         let transporter = nodemailer.createTransport({
-          host: "smtp.mail.yahoo.com",
-          port: 465,
+          host: process.env.SMTP_SERVER,
+          port: parseInt(process.env.SMTP_PORT),
           secure: true,
           auth: {
-            user: "pasindudushan07@yahoo.com",
-            pass: "sjrbeghvrlhorwnn",
+            user: process.env.USERNAME,
+            pass: process.env.PASSWORD,
           },
         });
 
         let info = await transporter.sendMail({
-          from: '"BITS 22" <pasindudushan07@yahoo.com>',
+          from: `"BITS 22" <${process.env.USERNAME}>`,
           to: userData.email,
           subject: `Hello ${userData.username}`,
           html: `<p>Your task with the ID <b>${req.params.id}</b> has been rejected for the following reason. Please fix the issue specified below and then re-submit your task.<br><b>Reason: ${req.body.denialreason}</b><br><br>- Good Luck -<br>BITS Task Reviewing Commitee</p>`, // plain text body
@@ -831,17 +828,17 @@ router.post(
 
     async function main() {
       let transporter = nodemailer.createTransport({
-        host: "smtp.mail.yahoo.com",
-        port: 465,
+        host: process.env.SMTP_SERVER,
+        port: parseInt(process.env.SMTP_PORT),
         secure: true,
         auth: {
-          user: "pasindudushan07@yahoo.com",
-          pass: "sjrbeghvrlhorwnn",
+          user: process.env.USERNAME,
+          pass: process.env.PASSWORD,
         },
       });
 
       let info = await transporter.sendMail({
-        from: '"BITS 22" <pasindudushan07@yahoo.com>',
+        from: `"BITS 22" <${process.env.USERNAME}>`,
         to: emails,
         subject: req.body.subject,
         text: req.body.message, // plain text body
@@ -866,17 +863,17 @@ router.post(
 
     async function main() {
       let transporter = nodemailer.createTransport({
-        host: "smtp.mail.yahoo.com",
-        port: 465,
+        host: process.env.SMTP_SERVER,
+        port: parseInt(process.env.SMTP_PORT),
         secure: true,
         auth: {
-          user: "pasindudushan07@yahoo.com",
-          pass: "sjrbeghvrlhorwnn",
+          user: process.env.USERNAME,
+          pass: process.env.PASSWORD,
         },
       });
 
       let info = await transporter.sendMail({
-        from: '"BITS 22" <pasindudushan07@yahoo.com>',
+        from: `"BITS 22" <${process.env.USERNAME}>`,
         to: emails,
         subject: req.body.subject,
         text: req.body.message, // plain text body
