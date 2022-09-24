@@ -76,7 +76,7 @@ router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
     }
 
     let target = req.body.advance;
-    let finalString = target.replaceAll('"', "");
+    let finalString = target.replaceAll('"', "");  //Converting string into a boolean
 
     let newTask = new Tasks({
       task_id: c,
@@ -173,7 +173,7 @@ router.post(
           })
           .catch(console.log);
       } else {
-        let elemant = sheetResults[sheetResults.length - 1];
+        let elemant = sheetResults[sheetResults.length - 1];  //Removing the last element from an array
         let number = elemant.sheetid + 1;
         Tasks.findOne({ task_id: req.params.id })
           .then((task) => {

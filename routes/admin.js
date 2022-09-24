@@ -15,6 +15,7 @@ const coding_id = process.env.CODING_ID;
 const design_id = process.env.DESIGN_ID;
 const explore_id = process.env.EXPLORE_ID;
 
+// Checking if there is a session
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
     res.redirect("/login");
@@ -23,6 +24,7 @@ const isAuthenticated = (req, res, next) => {
   }
 };
 
+// Checking whether the current user is an admin
 const isAdmin = (req, res, next) => {
   if (!req.session.adminToken) {
     return res.json({ code: 403, message: "Unauthorized" });
@@ -37,7 +39,7 @@ const isAdmin = (req, res, next) => {
 router.get("/", isAuthenticated, isAdmin, async (req, res, next) => {
   const userData = await User.findOne({ unique_id: req.session.userId });
 
-  if (userData.adminUser) {
+  if (userData.adminUser) { //Fetching user profile
     const taskdata = await Admin.findOne({ number: 1 });
     const tasks = taskdata.taskData;
 
@@ -125,7 +127,7 @@ router.post(
 
       let type;
 
-      if (adminChoosedResults[0].task_category === "CODING") {
+      if (adminChoosedResults[0].task_category === "CODING") { //Checking the task category
         type = coding_id;
       } else if (adminChoosedResults[0].task_category === "DESIGN") {
         type = design_id;
@@ -137,7 +139,7 @@ router.post(
         try {
           const { sheets } = await authentication();
 
-          const writeReq = await sheets.spreadsheets.values.update({
+          const writeReq = await sheets.spreadsheets.values.update({  //Updating spreadsheet according to the fetched data
             spreadsheetId: type,
             range: `${req.params.id}!A${sheetResults[0].sheetid}`,
             valueInputOption: "USER_ENTERED",
@@ -187,7 +189,7 @@ router.post(
         })
         .catch(console.log);
 
-      await userTasks.updateOne({ user_id: req.params.user }, [
+      await userTasks.updateOne({ user_id: req.params.user }, [ //Adding points to the user profile
         {
           $set: {
             total_points: {
@@ -206,7 +208,7 @@ router.post(
         { $pull: { taskData: { _id: adminChoosedResults[0].id } } }
       );
 
-      async function main() {
+      async function main() {  //SMTP email system
         let transporter = nodemailer.createTransport({
           host: process.env.SMTP_SERVER,
           port: parseInt(process.env.SMTP_PORT),
@@ -396,7 +398,7 @@ router.post("/test/add", isAuthenticated, isAdmin, async (req, res, next) => {
   let c;
   Tests.findOne({}, async (err, data) => {
     if (data) {
-      const testdata = await Tests.find().limit(1).sort({ $natural: -1 });
+      const testdata = await Tests.find().limit(1).sort({ $natural: -1 }); //Checking for the unique ids
       c = testdata[0].test_id + 100;
     } else {
       c = 100;
@@ -501,7 +503,7 @@ router.get(
       });
 
     const uniqueArray = [
-      ...new Map(codingTasksArray.map((m) => [m.task_id, m])).values(),
+      ...new Map(codingTasksArray.map((m) => [m.task_id, m])).values(),  //Mapping values to the array
     ];
 
     let length = [];
@@ -747,7 +749,7 @@ router.get(
     }
   }
 );
-
+ // Most important route in the competition
 router.get("/power", isAuthenticated, isAdmin, async (req, res, next) => {
   const data = await IMP.findOne({ power_admin: 1 });
   if (1 !== req.session.userId) {
@@ -950,6 +952,7 @@ router.post(
   }
 );
 
+//Google sheets authentication
 const authentication = async () => {
   const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",

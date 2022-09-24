@@ -252,7 +252,7 @@ router.get(
     const replaced = str.replace(/\D/g, "");
 
     let user_type;
-    if (replaced >= 6 && replaced <= 9) {
+    if (replaced >= 6 && replaced <= 9) {  //Checking the users grade.
       user_type = "junior";
     } else if (replaced == 10 || replaced == 11 || replaced == 1000) {
       user_type = "senior";
@@ -456,6 +456,7 @@ router.post("/forgetpass", (req, res, next) => {
   });
 });
 
+//Generating random ids for the competitors
 const com_id = () => {
   var val = Math.floor(1000 + Math.random() * 9000);
   return val;
