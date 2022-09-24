@@ -6,8 +6,13 @@ const Tasks = require("../models/tasks");
 const Admin = require("../models/admin");
 const Tests = require("../models/tests");
 const IMP = require("../models/confidential");
+const { google } = require("googleapis");
 const nodemailer = require("nodemailer");
 require("dotenv").config();
+
+const coding_id = "1CcyAq-e2fdoYwHJOLBVO3iTvU_1FbxYWhojSYdt7MD0";
+const design_id = "106AlJ866sd3lr43W59_KtqjLrd5MxvgMR3yGeryYNbk";
+const explore_id = "1LUTs9vX2dMj1EbbemverbHUNqKEyGGbXk_m9zM877Vs";
 
 const isAuthenticated = (req, res, next) => {
   if (!req.session.userId) {
@@ -71,8 +76,23 @@ router.post(
       const taskData = await userTasks.findOne({ user_id: req.params.user });
       const Admindata = await Admin.findOne({ number: 1 });
 
+      var currentdate = new Date(); 
+
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
+      var sheetDataArray = task_dat.sheetData
+
+      const sheetResults = sheetDataArray
+      .filter(function(data){
+        return data.userId === userData.unique_id
+      })
+      .map(function (data) {
+        return {
+          userid: data.userId,
+          sheetid: data.sheetId
+        };
+      })
+
       const choosedResults = pendingTasksArray
         .filter(function (data) {
           return data.task_id === parseInt(req.params.id);
@@ -98,8 +118,57 @@ router.post(
             task_description: data.task_description,
             task_id: data.task_id,
             task_category: data.task_category,
+            project_url: data.project_url,
           };
         });
+
+        let type;
+
+        if(adminChoosedResults[0].task_category === "CODING"){
+          type = coding_id
+        } else if(adminChoosedResults[0].task_category === "DESIGN"){
+          type = design_id
+        } else if(adminChoosedResults[0].task_category === "EXPLORE"){
+          type = explore_id
+        }
+
+        (async () => {
+          try {
+            const { sheets } = await authentication();
+  
+            const writeReq = await sheets.spreadsheets.values.update({
+              spreadsheetId: type,
+              range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+              valueInputOption: "USER_ENTERED",
+              resource: {
+               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+               majorDimension: "ROWS",
+               values: [
+                [
+                  currentdate,
+                  userData.email,
+                  userData.competitor_id,
+                  userData.username,
+                  adminChoosedResults[0].project_url,
+                  "No Feedback",
+                  req.body.points,
+                  "Approved"
+                ]
+               ]
+              }
+            });
+  
+            if (writeReq.status === 200) {
+              console.log("Spreadsheet updated");
+            } else {
+              console.log(
+                "Somethign went wrong while updating the spreadsheet."
+              );
+            }
+          } catch (e) {
+            console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+          }
+        })();
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -177,8 +246,23 @@ router.post(
       const taskData = await userTasks.findOne({ user_id: req.params.user });
       const Admindata = await Admin.findOne({ number: 1 });
 
+      var currentdate = new Date(); 
+
       var pendingTasksArray = taskData.pending_tasks;
       var adminTasksArray = Admindata.taskData;
+      var sheetDataArray = task_dat.sheetData
+
+      const sheetResults = sheetDataArray
+      .filter(function(data){
+        return data.userId === userData.unique_id
+      })
+      .map(function (data) {
+        return {
+          userid: data.userId,
+          sheetid: data.sheetId
+        };
+      })
+
       const choosedResults = pendingTasksArray
         .filter(function (data) {
           return data.task_id === parseInt(req.params.id);
@@ -204,8 +288,57 @@ router.post(
             task_description: data.task_description,
             task_id: data.task_id,
             task_category: data.task_category,
+            project_url: data.project_url,
           };
         });
+
+        let type;
+
+        if(adminChoosedResults[0].task_category === "CODING"){
+          type = coding_id
+        } else if(adminChoosedResults[0].task_category === "DESIGN"){
+          type = design_id
+        } else if(adminChoosedResults[0].task_category === "EXPLORE"){
+          type = explore_id
+        }
+
+        (async () => {
+          try {
+            const { sheets } = await authentication();
+  
+            const writeReq = await sheets.spreadsheets.values.update({
+              spreadsheetId: type,
+              range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+              valueInputOption: "USER_ENTERED",
+              resource: {
+               range: `${req.params.id}!A${sheetResults[0].sheetid}`,
+               majorDimension: "ROWS",
+               values: [
+                [
+                  currentdate,
+                  userData.email,
+                  userData.competitor_id,
+                  userData.username,
+                  adminChoosedResults[0].project_url,
+                  req.body.denialreason,
+                  "0",
+                  "Declined"
+                ]
+               ]
+              }
+            });
+  
+            if (writeReq.status === 200) {
+              console.log("Spreadsheet updated");
+            } else {
+              console.log(
+                "Somethign went wrong while updating the spreadsheet."
+              );
+            }
+          } catch (e) {
+            console.log("ERROR WHILE UPDATING THE SPREADSHEET", e);
+          }
+        })();
 
       userTasks
         .findOne({ user_id: req.params.user })
@@ -819,5 +952,20 @@ router.post(
     res.redirect("/admin/test/submittions");
   }
 );
+
+const authentication = async () => {
+  const auth = new google.auth.GoogleAuth({
+    keyFile: "credentials.json",
+    scopes: "https://www.googleapis.com/auth/spreadsheets",
+  });
+
+  const client = await auth.getClient();
+
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
+  });
+  return { sheets };
+};
 
 module.exports = router;
