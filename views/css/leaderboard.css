@@ -44,10 +44,7 @@ body {
 .nav .nav-links .nav-link {
   padding: 0.8em;
   transition: 0.1s;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 .nav .nav-links .nav-link:hover {
   transform: scale(1.1);
@@ -124,4 +121,4 @@ body {
 .leaderboard .tfield-points {
   text-align: right;
   width: 20%;
-}/*# sourceMappingURL=leaderboard.css.map */
+}
