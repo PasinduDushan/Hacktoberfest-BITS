@@ -10,6 +10,14 @@ $bg-path: "../img/bg_overlay.svg";
 $col-ti-bg: #293045;
 $col-ti-tag: #1E2436;
 $col-ti-desc: #DBE5FFC1;
+$col-sb-placeholder: #7D8AB0;
+
+$col-red-dark: #A70707;
+$col-green-dark: #199607;
+$col-yellow-dark: #DE8D13;
+$gradient-green: ($col-green-dark, #19C346);
+$gradient-red: ($col-red-dark, #FC2828);
+$gradient-yellow: ($col-yellow-dark, #CB9D00);
 
 @mixin gradientText($c1, $c2, $shadow: 0) {
     background: linear-gradient(110deg, $c1 0%, $c2 100%);
