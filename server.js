@@ -1,5 +1,5 @@
+require("dotenv").config();
 const express = require("express");
-const ejs = require("ejs");
 const path = require("path");
 const app = express();
 const bodyParser = require("body-parser");
@@ -7,9 +7,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
-const MongoDBURI =
-  process.env.MONGO_URI ||
-  "mongodb+srv://Admin:pasindu2005@1pg.uvh1g.mongodb.net/?retryWrites=true&w=majority";
+const MongoDBURI = process.env.MONGO_URI
 
 mongoose.connect(MongoDBURI, {
   useUnifiedTopology: true,
