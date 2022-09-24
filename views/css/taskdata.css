@@ -44,10 +44,7 @@ body {
 .nav .nav-links .nav-link {
   padding: 0.8em;
   transition: 0.1s;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 .nav .nav-links .nav-link:hover {
   transform: scale(1.1);
@@ -105,14 +102,6 @@ body {
   background-color: transparent;
   border: none;
   outline: none;
-}
-.task-search .searchbar input::-moz-placeholder {
-  font-style: italic;
-  color: #7D8AB0;
-}
-.task-search .searchbar input:-ms-input-placeholder {
-  font-style: italic;
-  color: #7D8AB0;
 }
 .task-search .searchbar input::placeholder {
   font-style: italic;
@@ -176,10 +165,7 @@ body {
   font-size: 1em;
   font-weight: bold;
   transition: 0.15s;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
   cursor: pointer;
 }
 .tasks .task-item .ti-cta a {
@@ -248,8 +234,6 @@ body {
   width: 40%;
 }
 .tasks .tf-list {
-  width: -webkit-max-content;
-  width: -moz-max-content;
   width: max-content;
   margin-left: auto;
   display: flex;
@@ -263,10 +247,7 @@ body {
   border-radius: 8px;
   transition: 0.2s;
   cursor: pointer;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
+  user-select: none;
 }
 .tasks .tf-list .tf-item:hover {
   transform: scale(1.1);
@@ -276,8 +257,8 @@ body {
 }
 .tasks .tf-list .tf-item.tf-blue p {
   background: linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
+  background-clip: text;
   -webkit-background-clip: text;
-          background-clip: text;
   color: transparent;
 }
 .tasks .tf-list .tf-item.tf-blue.tf-active {
@@ -288,8 +269,8 @@ body {
 }
 .tasks .tf-list .tf-item.tf-green p {
   background: linear-gradient(110deg, #199607 0%, #19C346 100%);
+  background-clip: text;
   -webkit-background-clip: text;
-          background-clip: text;
   color: transparent;
 }
 .tasks .tf-list .tf-item.tf-green.tf-active {
@@ -300,8 +281,8 @@ body {
 }
 .tasks .tf-list .tf-item.tf-red p {
   background: linear-gradient(110deg, #A70707 0%, #FC2828 100%);
+  background-clip: text;
   -webkit-background-clip: text;
-          background-clip: text;
   color: transparent;
 }
 .tasks .tf-list .tf-item.tf-red.tf-active {
@@ -312,8 +293,8 @@ body {
 }
 .tasks .tf-list .tf-item.tf-yellow p {
   background: linear-gradient(110deg, #DE8D13 0%, #CB9D00 100%);
+  background-clip: text;
   -webkit-background-clip: text;
-          background-clip: text;
   color: transparent;
 }
 .tasks .tf-list .tf-item.tf-yellow.tf-active {
@@ -321,4 +302,4 @@ body {
 }
 .tasks .tf-list .tf-item.tf-yellow.tf-active p {
   color: #DCE7FE;
-}/*# sourceMappingURL=taskdata.css.map */
+}
