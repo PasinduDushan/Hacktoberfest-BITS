@@ -37,4 +37,4 @@ cd BITS22
 ```bash
 npm install --save
 ```
-4.  Go to ```.env``` file and then follow before instruction about how to fill the fields.
+4.  Go to ```.env``` file and then follow before instruction about how to fill all the fields.
