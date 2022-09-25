@@ -8,6 +8,7 @@ const Tests = require("../models/tests");
 const Admin = require("../models/admin");
 const IMP = require("../models/confidential");
 const nodemailer = require("nodemailer");
+const request = require('request');
 const { google } = require("googleapis");
 
 const id = process.env.REGISTER_ID;
@@ -45,7 +46,10 @@ router.get("/", (req, res, next) => {
 });
 
 router.get("/signup", (req, res, next) => {
-  return res.render("signup.ejs");
+  let site_key = process.env.RECAPTCHA_SITE_KEY
+  return res.render("signup.ejs", {
+    site_key: site_key
+  });
 });
 
 router.post("/signup", async (req, res, next) => {
@@ -62,6 +66,31 @@ router.post("/signup", async (req, res, next) => {
     if (personInfo.password == personInfo.passwordConf) {
       User.findOne({ email: personInfo.email }, (err, data) => {
         if (!data) {
+          if (
+            req.body['catcha-res'] === undefined ||
+            req.body['catcha-res'] === null ||
+            req.body['catcha-res'] === ''
+          ) {
+            return res.json({ responseError: 'something went wrong' })
+          }
+          const secretKey = process.env.RECAPTCHA_SECRET;
+        
+          const isUrlValid =
+            'https://www.google.com/recaptcha/api/siteverify?secret=' +
+            secretKey +
+            '&response=' +
+            req.body['catcha-res'] +
+            '&remoteip=' +
+            req.socket.remoteAddress
+        
+          request(isUrlValid, function (error, response, body) {
+            body = JSON.parse(body)
+        
+            if (body.success !== undefined && !body.success) {
+              return res.json({ responseError: 'Captcha verification failed' })
+            }
+          })
+
           let c;
           User.findOne({}, (err, data) => {
             if (data) {
