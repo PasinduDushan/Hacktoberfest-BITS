@@ -29,12 +29,24 @@ This code is mainly made using express. Please refer below about how to run this
 ```bash
 git clone https://github.com/PasinduDushan/BITS22
 ```
-2. Change directory to the project folder
+ 2. Change directory to the project folder
 ```bash
 cd BITS22
 ```
-3. Install the necessary dependencies. 
+ 3.  Install the necessary dependencies. 
 ```bash
 npm install --save
 ```
-4.  Go to ```.env``` file and then follow before instruction about how to fill all the fields.
+ 4.  Go to ```.env``` file and then follow before instruction below to fill the env file properly.
+
+##
+
+### How to fill ```.env``` file.
+
+ - ```TOKEN``` is a random string that is used to identify admin users when logging in to the webpage. You can generate a random hash or input one you like.
+ - ```REGISTER_ID```,```CODING_ID```,```DESIGN_ID```   filling follows the same pattern and this is the most trickiest to fill. First of all go to [Google Sheets](https://google.com/sheets). After that follow below steps.
+
+    **Click on Blank**.
+    ![enter image description here](https://i.imgur.com/f11WIAs.png)
+    **Add a Spreadsheet name and then copy the ID of the sheet**
+    
