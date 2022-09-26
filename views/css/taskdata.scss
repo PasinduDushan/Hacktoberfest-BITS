@@ -15,6 +15,7 @@
     font-size: 1em;
 
     .searchbar {
+        position: relative;
         background-color: $col-ti-bg;
         border-radius: 16px;
 
@@ -31,7 +32,7 @@
             font-size: inherit;
             // font-style: italic;
             color: $col-ti-desc;
-            width: 40vw;
+            width: 35vw;
             padding: .8em 1.5em .8em 0;
             border-radius: 0 8px 8px 0;
             background-color: transparent;
@@ -41,6 +42,97 @@
             &::placeholder {
                 font-style: italic;
                 color: $col-sb-placeholder;
+            }
+        }
+
+        .task-filter-cat {
+            background-color: transparent;
+            border: none;
+            border-left: 1px solid $col-sb-div;
+            color: $col-light;
+            height: 100%;
+            border-radius: 0 8px 8px 0;
+            padding: .8em 1.5em;
+            font-size: 1em;
+            transition: .15s;
+            cursor: pointer;
+
+            i { 
+                color: $col-acnt-light;
+                margin-right: .4em;
+            }
+            p { transition: inherit; }
+
+            &:hover p { transform: scale(1.1); }
+            &:active p { transform: scale(.9); }
+        }
+
+        .task-filter-cat-popup {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            // width: 8em;
+            // height: 10em;
+            margin-top: 1em;
+
+            // background-color: $col-ti-bg;
+            color: $col-light;
+            border-radius: 16px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            gap: 1em;
+            
+            @keyframes popup {
+                from {
+                    opacity: 0;
+                    transform: scale(0);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            
+            opacity: 0;
+            transform-origin: top center;
+            animation: popup .15s forwards;
+
+            &.tf-cat-hidden {
+                display: none;
+            }
+
+            .tf-cat-option {
+                background: $col-ti-bg;
+                color: inherit;
+                font-size: 1em;
+                border: none;
+                border-radius: 16px;
+                width: 100%;
+                padding: 1em 1.5em;
+                transition: .2s;
+                cursor: pointer;
+
+                &:last-child {
+                    border: none;
+                }
+
+                p { transition: inherit; }
+                i { margin-right: .5em; }
+
+                &:hover {
+                    color: $col-mid;
+                    transform: scale(1.1);
+                }
+                &:active {
+                    transform: scale(.9);
+                }
+                
+                &.tf-cat-active {
+                    background: $col-acnt-mid linear-gradient(110deg, $col-acnt-light 0%, $col-acnt-dark 100%);
+                }
             }
         }
     }

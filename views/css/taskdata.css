@@ -200,6 +200,7 @@ body {
   font-size: 1em;
 }
 .task-search .searchbar {
+  position: relative;
   background-color: #293045;
   border-radius: 16px;
   display: flex;
@@ -213,7 +214,7 @@ body {
 .task-search .searchbar input {
   font-size: inherit;
   color: rgba(219, 229, 255, 0.7568627451);
-  width: 40vw;
+  width: 35vw;
   padding: 0.8em 1.5em 0.8em 0;
   border-radius: 0 8px 8px 0;
   background-color: transparent;
@@ -223,6 +224,90 @@ body {
 .task-search .searchbar input::placeholder {
   font-style: italic;
   color: #7D8AB0;
+}
+.task-search .searchbar .task-filter-cat {
+  background-color: transparent;
+  border: none;
+  border-left: 1px solid #495370;
+  color: #DCE7FE;
+  height: 100%;
+  border-radius: 0 8px 8px 0;
+  padding: 0.8em 1.5em;
+  font-size: 1em;
+  transition: 0.15s;
+  cursor: pointer;
+}
+.task-search .searchbar .task-filter-cat i {
+  color: #2788F7;
+  margin-right: 0.4em;
+}
+.task-search .searchbar .task-filter-cat p {
+  transition: inherit;
+}
+.task-search .searchbar .task-filter-cat:hover p {
+  transform: scale(1.1);
+}
+.task-search .searchbar .task-filter-cat:active p {
+  transform: scale(0.9);
+}
+.task-search .searchbar .task-filter-cat-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 1em;
+  color: #DCE7FE;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 1em;
+  opacity: 0;
+  transform-origin: top center;
+  animation: popup 0.15s forwards;
+}
+@keyframes popup {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.task-search .searchbar .task-filter-cat-popup.tf-cat-hidden {
+  display: none;
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option {
+  background: #293045;
+  color: inherit;
+  font-size: 1em;
+  border: none;
+  border-radius: 16px;
+  width: 100%;
+  padding: 1em 1.5em;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option:last-child {
+  border: none;
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option p {
+  transition: inherit;
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option i {
+  margin-right: 0.5em;
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option:hover {
+  color: rgba(220, 231, 254, 0.7725490196);
+  transform: scale(1.1);
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option:active {
+  transform: scale(0.9);
+}
+.task-search .searchbar .task-filter-cat-popup .tf-cat-option.tf-cat-active {
+  background: rgba(31, 104, 249, 0.6862745098) linear-gradient(110deg, #2788F7 0%, #0913FF 100%);
 }
 
 .tasks {
