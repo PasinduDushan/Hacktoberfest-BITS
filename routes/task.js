@@ -60,6 +60,7 @@ router.get("/:id", isEnabled, isHypeUser, (req, res, next) => {
         id: data.task_id,
         title: data.task_title,
         description: data.big_description,
+        category: data.task_category
       });
     }
   });
@@ -100,40 +101,6 @@ router.post("/addtask/success", isAuthenticated, isAdmin, async (req, res) => {
 });
 
 router.post(
-  "/choose/:id",
-  isEnabled,
-  isAuthenticated,
-  isHypeUser,
-  async (req, res, next) => {
-    const task = await Tasks.findOne({ task_id: req.params.id });
-    if (!task) {
-      res.sendStatus(404);
-    } else {
-      const taskData = await Tasks.findOne({ task_id: req.params.id });
-      userTasks
-        .findOne({ user_id: req.session.userId })
-        .then((task) => {
-          task.choosed_tasks.push({
-            task_title: taskData.task_title,
-            task_description: taskData.task_description,
-            task_id: taskData.task_id,
-            task_category: taskData.task_category,
-          });
-          task
-            .save()
-            .then(() => {
-              return "Success";
-            })
-            .catch(console.log);
-        })
-        .catch(console.log);
-
-      res.redirect("/profile");
-    }
-  }
-);
-
-router.post(
   "/submit/:id",
   isEnabled,
   isAuthenticated,
@@ -143,11 +110,9 @@ router.post(
     if (!userData) {
       return res.send("User does not exists in the database");
     } else {
-      const taskData = await userTasks.findOne({ user_id: req.session.userId });
       const task_dat = await Tasks.findOne({ task_id: req.params.id });
       const user = await User.findOne({ unique_id: req.session.userId });
 
-      var choosedTasksArray = taskData.choosed_tasks;
       var sheetDataArray = task_dat.sheetData;
 
       const sheetResults = sheetDataArray.map(function (data) {
@@ -191,24 +156,14 @@ router.post(
           .catch(console.log);
       }
 
-      const choosedResults = choosedTasksArray.map(function (data) {
-        return {
-          id: data._id,
-          task_title: data.task_title,
-          task_description: data.task_description,
-          task_id: data.task_id,
-          task_category: data.task_category,
-        };
-      });
-
       var currentdate = new Date();
       let type;
 
-      if (choosedResults[0].task_category === "CODING") {
+      if (req.body.task === "CODING") {
         type = coding_id;
-      } else if (choosedResults[0].task_category === "DESIGN") {
+      } else if (req.body.task === "DESIGN") {
         type = design_id;
-      } else if (choosedResults[0].task_category === "EXPLORE") {
+      } else if (req.body.task === "EXPLORE") {
         type = explore_id;
       }
 
@@ -283,11 +238,6 @@ router.post(
             .catch(console.log);
         })
         .catch(console.log);
-
-      await userTasks.update(
-        { _id: taskData._id },
-        { $pull: { choosed_tasks: { _id: choosedResults[0].id } } }
-      );
 
       res.redirect("/profile");
     }
