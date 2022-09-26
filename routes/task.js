@@ -51,16 +51,32 @@ const isEnabled = async (req, res, next) => {
   }
 };
 
-router.get("/:id", isEnabled, isHypeUser, (req, res, next) => {
-  Tasks.findOne({ task_id: req.params.id }, (err, data) => {
+router.get("/:id", isEnabled, isAuthenticated, isHypeUser, (req, res, next) => {
+  Tasks.findOne({ task_id: req.params.id }, async(err, data) => {
     if (!data) {
       res.send("No task was found with the given ID");
     } else {
+    const user_tasks = await userTasks.findOne({ user_id: req.session.userId });
+    const approved = user_tasks.approved_tasks;
+    const declined = user_tasks.declined_tasks;
+    const pending = user_tasks.pending_tasks;
+    const approvedArray = approved.map(function (data) {
+      return data.task_id;
+    });
+    const declineArray = declined.map(function (data) {
+      return data.task_id;
+    });
+    const pendingArray = pending.map(function (data) {
+      return data.task_id;
+    });
       res.render("tasks", {
         id: data.task_id,
         title: data.task_title,
         description: data.big_description,
-        category: data.task_category
+        category: data.task_category,
+        approvedArray: approvedArray,
+        declineArray: declineArray,
+        pendingArray: pendingArray
       });
     }
   });
