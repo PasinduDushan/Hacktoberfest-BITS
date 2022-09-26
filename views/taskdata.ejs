@@ -21,6 +21,14 @@
             <i class="fa-solid fa-magnifying-glass"></i>
           </div>
           <input id="task-search" type="text" placeholder="Search Tasks">
+          <button class="task-filter-cat">
+            <p><i class="fa-solid fa-filter"></i>Filter</p>
+          </button>
+          <div class="task-filter-cat-popup tf-cat-hidden">
+            <button class="tf-cat-option tf-cat-active" data-tf-cat="CODING"><p><i class="fa-solid fa-code"></i> Code</p></button>
+            <button class="tf-cat-option tf-cat-active" data-tf-cat="DESIGN"><p><i class="fa-solid fa-pen"></i> Design</p></button>
+            <button class="tf-cat-option tf-cat-active" data-tf-cat="EXPLORE"><p><i class="fa-solid fa-magnifying-glass"></i> Explore</p></button>
+          </div>
         </div>
       </section>
       <section class="tasks">
@@ -116,6 +124,25 @@
           el.classList.add("tf-active")
 
           check_search(search.value) // HERE
+        })
+      })
+    </script>
+
+    <script>
+      const sortByCat = (cat) => {
+        document.querySelectorAll(`[data-task-cat=${cat}]`).forEach((el) => {
+          el.classList.toggle("task-filtered-cat")
+        })
+      }
+
+      document.querySelector(".task-filter-cat").addEventListener("click", (e) => {
+        document.querySelector(".task-filter-cat-popup").classList.toggle("tf-cat-hidden")
+      })
+      
+      document.querySelectorAll(".tf-cat-option").forEach((el) => {
+        el.addEventListener("click", (e) => {
+          el.classList.toggle("tf-cat-active")
+          sortByCat(el.getAttribute("data-tf-cat"))
         })
       })
     </script>
