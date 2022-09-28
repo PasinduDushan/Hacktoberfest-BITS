@@ -99,7 +99,9 @@ Take a note of the email address of the service account. We will need to share o
 **Most IMPORTANT Part: Sharing the Spreadsheets with the ```Google Service Account```.**
 
 Now that we have a service account, we need to share our spreadsheet with it. It's just like sharing a spreadsheet with any normal user account. Open all 3 spreadsheets in your browser and click on the **Share** button on top right corner. That will open a modal where you need to enter the email address of the service account. Uncheck the checkbox for **Notify people** since this will send an email and since service account does not have any mailbox, it will give you a mail delivery failure notification.
+
 ![enter image description here](https://i.imgur.com/FjRJUgM.png)
+
 *This process must be done to all other 2 sheets also*. Click Share. And all the configurations are done. 
 Now find the **credentials.json** file you renamed recently and put that file in the project folder. (Put in root directory). 
 
