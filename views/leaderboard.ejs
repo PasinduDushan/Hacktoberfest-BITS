@@ -28,7 +28,7 @@
             <%db.forEach(function(data) { %>
             <tr>
               <th class="tfield-rank"><%= i++ %></th>
-              <td class="tfield-name"><%= data.same[0].fullname %></td>
+              <td class="tfield-name"><%= data.same[0].username %></td>
               <td class="tfield-grade"><%= String(data.same[0].grade).replace(/1000/g, ' ') %></td>
               <td class="tfield-tasks"><%= data.approved_tasks.length %></td>
               <td class="tfield-points"><%= data.total_points %></td>
