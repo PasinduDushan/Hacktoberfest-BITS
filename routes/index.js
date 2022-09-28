@@ -52,6 +52,11 @@ router.get("/signup", (req, res, next) => {
   });
 });
 
+/* NOTE: 
+HTTP 400 => Bad Request => { responseError: "err" }
+HTTP 200 => Invalid Data => { Success: "msg" }
+HTTP 201 => Successfull => { Success: "msg" }
+*/
 router.post("/signup", async (req, res, next) => {
   let personInfo = req.body;
 
@@ -71,7 +76,7 @@ router.post("/signup", async (req, res, next) => {
             req.body['catcha-res'] === null ||
             req.body['catcha-res'] === ''
           ) {
-            return res.json({ responseError: 'something went wrong' })
+            return res.status(400).json({ responseError: 'something went wrong' })
           }
           const secretKey = process.env.RECAPTCHA_SECRET;
         
@@ -87,7 +92,7 @@ router.post("/signup", async (req, res, next) => {
             body = JSON.parse(body)
         
             if (body.success !== undefined && !body.success) {
-              return res.json({ responseError: 'Captcha verification failed' })
+              return res.status(400).json({ responseError: 'Captcha Failed' })
             }
           })
 
@@ -228,13 +233,13 @@ router.post("/signup", async (req, res, next) => {
           })
             .sort({ _id: -1 })
             .limit(1);
-          res.send({ Success: "You are registered,You can login now." });
+          res.status(201).send({ Success: "You are registered,You can login now." });
         } else {
-          res.send({ Success: "Email is already used." });
+          res.status(200).send({ Success: "Email Already Used" });
         }
       });
     } else {
-      res.send({ Success: "password is not matched" });
+      res.status(200).send({ Success: "Passwords Not Matched" });
     }
   }
 });
@@ -323,12 +328,15 @@ router.post("/login", isEnabled, (req, res, next) => {
         req.session.bitsUser = data.bitsUser;
         req.session.hypertextUser = data.hypertextUser;
         req.session.userId = data.unique_id;
-        res.send({ Success: "Success!" });
+        // res.send({ Success: "Success!" });
+        res.sendStatus(200)
       } else {
-        res.send({ Success: "Wrong email or password!" });
+        res.status(401).json({"message": "password incorrect"})
+        // res.send({ Success: "Wrong email or password!" });
       }
     } else {
-      res.send({ Success: "This Email Is not regestered!" });
+      res.status(401).json({"message": "email unregistered"})
+      // res.send({ Success: "This Email Is not regestered!" });
     }
   });
 });

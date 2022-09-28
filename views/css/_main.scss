@@ -13,11 +13,12 @@ $col-ti-desc: #DBE5FFC1;
 $col-sb-placeholder: #7D8AB0;
 $col-sb-div: #495370;
 
+$col-red-light: #FC2828;
 $col-red-dark: #A70707;
 $col-green-dark: #199607;
 $col-yellow-dark: #DE8D13;
 $gradient-green: ($col-green-dark, #19C346);
-$gradient-red: ($col-red-dark, #FC2828);
+$gradient-red: ($col-red-dark, $col-red-light);
 $gradient-yellow: ($col-yellow-dark, #CB9D00);
 
 @font-face {
