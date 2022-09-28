@@ -4,7 +4,6 @@ const Schema = mongoose.Schema;
 (usertasksSchema= new Schema({
     user_id: Number,
     total_points: Number,
-    choosed_tasks: [{ task_title: String, task_description: String, task_id: Number, task_category: String }],
     pending_tasks: [{ task_title: String, task_description: String, task_id: Number, task_category: String }],
     approved_tasks: [{ task_title: String, task_description: String, task_id: Number, task_category: String }],
     declined_tasks: [{ task_title: String, task_description: String, task_id: Number, task_category: String, denial_reason: String }]

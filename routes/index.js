@@ -133,7 +133,6 @@ router.post("/signup", async (req, res, next) => {
             let newUserTasks = new userTasks({
               user_id: c,
               total_points: 0,
-              choosed_tasks: [],
               pending_tasks: [],
               approved_tasks: [],
               declined_tasks: [],
@@ -349,19 +348,9 @@ router.get(
   async (req, res, next) => {
     const taskData = await userTasks.findOne({ user_id: req.session.userId });
     const userData = await User.findOne({ unique_id: req.session.userId });
-    var choosedTasksArray = taskData.choosed_tasks;
     var approvedTasksArray = taskData.approved_tasks;
     var declinedTasksArray = taskData.declined_tasks;
     var pendingTasksArray = taskData.pending_tasks;
-
-    const choosedResults = choosedTasksArray.map(function (data) {
-      return {
-        task_title: data.task_title,
-        task_description: data.task_description,
-        task_id: data.task_id,
-        task_category: data.task_category,
-      };
-    });
 
     const approvedResults = approvedTasksArray.map(function (data) {
       return {
@@ -392,7 +381,6 @@ router.get(
     });
 
     res.render("data", {
-      choosedResults: choosedResults,
       approvedResults: approvedResults,
       declinedResults: declinedResults,
       pendingResults: pendingResults,

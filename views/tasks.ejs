@@ -9,9 +9,77 @@
   </head>
   <body>
     <center><p><h3><u><%= title %></u></h3></p><br><md-block><%= description %></md-block></center>
-    <center><form action="/task/choose/<%= id %>" method="post">
-      <button type="submit" class="btn btn-primary">Choose Task</button><br>
-    </form></center>
+    <center>
+    <% if(approvedArray.includes(id)) { %>
+        <button type="submit" class="btn btn-primary disabled" aria-disabled="true">Already Approved</button><br>
+    <% } else if(pendingArray.includes(id)) { %>  
+        <button type="submit" class="btn btn-primary disabled" aria-disabled="true">Task is Pending Review</button><br>
+    <% } else if(declineArray.includes(id)) { %>
+      <button type="button" class="btn btn-primary" id="btn-id2-<%= id %>" onclick="clickEventHandler2(event)">Re-Submit Task</button><br>
+      <div class="popup" id="popup-id2-<%= id %>" style="display: none;">
+      <form action="/task/resubmit/<%= id %>" method="post"><br>
+        <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
+        <input type="text" class="form-control" name="url" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+        <div id="emailHelp" class="form-text">Please type the URL of your uploaded project. It can be any URL that redirects to your created project</div>
+        </div>
+        <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">Any extra information you would like to share?</label>
+        <input type="text" class="form-control" name="feedback" id="exampleInputEmail1" aria-describedby="emailHelp" value="None">
+        <div id="emailHelp" class="form-text">Please type any information you want to share with the task reviewer such as how they want to open and run the project.</div>
+        </div>
+        <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">UUID</label>
+        <input type="text" class="form-control" name="uuid" id="exampleInputEmail1" aria-describedby="emailHelp" value="IOIHFOE$!#%4264276L427BI2L4762OI4762$&^@$^@$^@^124^26HI24H624^h24I6H2$i^H42i6H42I6HI@$^h42I6H2I4H6246iohoIHIOH" disabled>
+        <div id="emailHelp" class="form-text">Please ignore this field and submit</div>
+        </div>
+        <button type="submit" class="btn btn-primary">Re-Submit Task</button>
+        <button type="button" class="btn cancel" id="btn-id2-<%= id %>" onclick="closeEventHandler2(event)">Close</button>
+      </form>
+      </div><br>
+    <% } else { %>
+      <button type="submit" class="btn btn-primary" id="btn-id-<%= id %>" onclick="clickEventHandler(event)">Submit Task</button><br>
+      <div class="popup" id="popup-id-<%= id %>" style="display: none;">
+        <form action="/task/submit/<%= id %>" method="post"><br>
+          <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">URL of the project (Drive, Box)</label>
+          <input type="text" class="form-control" name="url" id="exampleInputEmail1" aria-describedby="emailHelp" required>
+          <div id="emailHelp" class="form-text">Please type the URL of your uploaded project. It can be any URL that redirects to your created project</div>
+          </div>
+          <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Any extra information you would like to share?</label>
+          <input type="text" class="form-control" name="feedback" id="exampleInputEmail1" aria-describedby="emailHelp" value="None">
+          <div id="emailHelp" class="form-text">Please type any information you want to share with the task reviewer such as how they want to open and run the project.</div>
+          </div>
+          <input type="hidden" name="task" value="<%= category %>" />
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="button" class="btn cancel" id="btn-id-<%= id %>" onclick="closeEventHandler(event)">Close</button>
+        </form>
+        </div><br>
+      <% } %>
+    </center>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <script>
+      const clickEventHandler = (event) => {
+          const id = "popup-id-"+event.target.id.split('-')[2];
+          document.getElementById(id).style.display="block"
+        }
+  
+        const closeEventHandler = (event) => {
+          const id = "popup-id-"+event.target.id.split('-')[2];
+          document.getElementById(id).style.display="none"
+        }
+
+        const clickEventHandler2 = (event) => {
+          const id = "popup-id2-"+event.target.id.split('-')[2];
+          document.getElementById(id).style.display="block"
+        }
+
+        const closeEventHandler2 = (event) => {
+          const id = "popup-id2-"+event.target.id.split('-')[2];
+          document.getElementById(id).style.display="none"
+        }
+    </script>
   </body>
 </html>
