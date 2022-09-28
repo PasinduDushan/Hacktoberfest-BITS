@@ -67,6 +67,7 @@ npm install --save
 ![Click on New Project](https://i.imgur.com/MmKtbP0.png)
  
  Click *Create*
+ 
 ![enter image description here](https://i.imgur.com/19Jy7FD.png)
 
 After creating the project go to project dashboard and then click on **Enable APIs and Services** button. Search for **Google Sheets API** in the search bar and then once you see the result click on it and then click on **Enable**. 
@@ -79,7 +80,9 @@ Click on **Create Credentials** button at the top and select **Service Account**
 
 Enter the name and description of the service account and click **Create** button.
 ![enter image description here](https://i.imgur.com/R706EzO.png)
+
 Click **Continue** on the next dialog
+
 ![enter image description here](https://i.imgur.com/06z3tvm.png)
 
 On the next dialog, you get an option to create a key. This is an important step. Click on the **Create Key** button and choose **JSON** as the format. This will ask you to download the JSON file to your local machine.
@@ -87,7 +90,9 @@ On the next dialog, you get an option to create a key. This is an important step
 For this tutorial, I have renamed the file and saved it as **credentials.json** on my local machine.
 
 Keep it somewhere safe. This key file contains the credentials of the service account that we need in our Node.js script to access our spreadsheet from Google Sheets.
+
 ![enter image description here](https://i.imgur.com/QjNBxD7.png)
+
 Once you've followed all of these steps, you should see the newly created service account on the credentials page
 Take a note of the email address of the service account. We will need to share our spreadsheet with this account.
 
