@@ -1,4 +1,4 @@
-# Welcome to Bits'22
+# Welcome to Bits
 
 Hello competitor. This is the official source code for the bits competition 2022. You can contribute to this code by giving us Bugs, Improvements etc. This repository is also participating to hacktoberfest, so if you're also doing hacktoberfest this is a great chance. Please refer below about more details.
 
