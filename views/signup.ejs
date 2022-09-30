@@ -1,109 +1,3 @@
-<!-- <!DOCTYPE html>
-<html>
-
-<head>
-	<title>Signup for BITS'22</title>
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js">
-	</script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="./css/main.css">
-
-
-	<script type="text/javascript">
-		$(document).ready(() => {
-
-			$("#form1").submit((event) => {
-				event.preventDefault();
-
-				$.ajax({
-					type: 'POST',
-					url: '/signup',
-					data: $('#form1').serialize(),
-					dataType: "json",
-					success: (response) => {
-						$('#form1')[0].reset();
-
-						document.getElementById("check").innerHTML = response.Success;
-						setTimeout(() => {
-							document.getElementById("check").innerHTML = "";
-						}, 3000);
-						if (response.Success == "You are regestered,You can login now.") {
-							document.getElementById("aa").click();
-						};
-					},
-					error: () => {
-					}
-				})
-			});
-		});
-	</script>
-</head>
-
-<body>
-
-	<div class="col-md-4 col-md-offset-4 form-card">
-		<div>
-			<p>Register Now
-			</p>
-		</div>
-		<div class="form-group">
-			<form id="form1" method="post">
-				<input type="hidden" id="catcha-res" name="catcha-res" />
-                <input type="hidden" name="action" value="verify_gcaptcha" />
-				<input type="text" name="email" placeholder="E-mail" required=""
-				pattern="[-!#$%&'*+\/0-9=?ก-๙A-Z^_a-z`{|}~](\.?[-!#$%&'*+\/0-9=?ก-๙A-Z^_a-z`{|}~])*@[ก-๙a-zA-Z0-9](-*\.?[ก-๙a-zA-Z0-9])*\.[ก-๙a-zA-Z](-?[ก-๙a-zA-Z0-9])+$" class="form-control"><br />
-				<input type="text" name="username" placeholder="Username" required="" class="form-control"><br />
-				<input type="text" name="school" placeholder="Your School" value="Ananda College Colombo" required="" class="form-control" readonly="true"><br />
-				<input type="text" name="fullname" placeholder="Your Fullname" required="" class="form-control"><br />
-				<input type="number" name="age" placeholder="Your Age (If your age is not completed, please renter the next nearest number)" class="form-control"><br />
-				<label for="grade">Choose your grade:</label>
-				<select name="grade" id="condition" place>
-					<option value = "Grade 6" selected>Grade 6</option>
-					<option value = "Grade 7">Grade 7</option>
-					<option value = "Grade 8">Grade 8</option>
-					<option value = "Grade 9">Grade 9</option>
-					<option value = "Grade 10">Grade 10</option>
-					<option value = "Grade 11">Grade 11</option>
-					<option value = "After O/L 1000">After O/L</option>
-				</select><br><br> 
-				<label for="competition">Choose to what competition you're participating (Learn More):</label>
-				<select name="competition" id="condition" place>
-					<option value = "bitshype" selected>Bits and Hypertext</option>
-					<option value = "hype">Hypertext Only</option>
-				</select><br><br>
-				<input type="password" name="password" placeholder="Password" required="" class="form-control"><br />
-				<input type="password" name="passwordConf" placeholder="Confirm Password" required=""
-					class="form-control"><br />
-				<input type="submit" value="Register" class="btn btn-success">
-			</form>
-		</div>
-
-		<div class="mssg bg-danger">
-			<span id="check"></span>
-		</div>
-		<div>
-			<span>Already Registered! <a href="/login">Login</a></span>
-		</div>
-		<div id="LangTable"><a href="/login" id="aa"></a>
-		</div>
-	</div>
-	<script src="https://www.google.com/recaptcha/api.js?render=<%= site_key %>"></script>
-    <script>
-      grecaptcha.ready(function () {
-        grecaptcha
-          .execute("<%= site_key %>", {
-            action: "verify_gcaptcha",
-          })
-          .then(function (token) {
-            document.getElementById("catcha-res").value = token;
-          });
-      });
-    </script>
-</body>
-
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -155,7 +49,7 @@
 							<option value="Grade 9">Grade 09</option>
 							<option value="Grade 10">Grade 10</option>
 							<option value="Grade 11">Grade 11</option>
-							<option value="Grade After/OL 1000">Post O/L</option>
+							<option value="After/OL 1000">Post O/L</option>
 						</select>
 					</div>
 					<div class="form-input-field">
@@ -212,7 +106,7 @@
 				showError("Passwords are not matched", "passwordConf")
 			} else if (status == "CaptchaFailed") {
 				showError("Captcha Failed", false)
-			} else {
+			} else if (status != ""){
 				showError("Unknown Error", false)
 			}
 		}
@@ -262,7 +156,7 @@
 				"Grade 9": 14,
 				"Grade 10": 15,
 				"Grade 11": 16,
-				"Grade After O/L 1000": 17,
+				"After O/L 1000": 17,
 			}
 			const data = Object.fromEntries(new FormData(e.target).entries())
 			data.age = gradeToAge[data.grade]
