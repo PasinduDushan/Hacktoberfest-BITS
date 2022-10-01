@@ -1,9 +1,7 @@
 # Welcome to Bits'22
 
-![image](https://user-images.githubusercontent.com/41909955/193394187-a6855ff0-20cc-4f87-b4cd-2f0bef9368cb.png)
-
-
 Hello competitor! This is the official source code for the BITS '22 website. You can contribute to this code by notifying us on bugs, Improvements etc. This repository is also participating to hacktoberfest, so if you're also doing hacktoberfest this is a great chance.
+![image](https://user-images.githubusercontent.com/41909955/193394187-a6855ff0-20cc-4f87-b4cd-2f0bef9368cb.png)
 
 ## Technologies and Packages Used
 
@@ -11,7 +9,7 @@ Hello competitor! This is the official source code for the BITS '22 website. You
  - mongoose
  - connect-mongo
  - dotenv
- - ejs
+ - EJS
  - express
  - express-session
  - google-auth-library
