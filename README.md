@@ -1,6 +1,7 @@
 # Welcome to Bits'22
 
-Hello competitor! This is the official source code for BITS 2022, the annual task-based intra school competition organized by the ICT Society Of Ananda College. You can contribute to this code by bug fixing, suggesting Improvements etc. This repository is also participating to hacktoberfest, so if you're also participating in hacktoberfest this is a great chance . Please refer the info below for more details.
+Hello competitor! This is the official source code for the BITS '22 website. You can contribute to this code by notifying us on bugs, Improvements etc. This repository is also participating to hacktoberfest, so if you're also doing hacktoberfest this is a great chance.
+![image](https://user-images.githubusercontent.com/41909955/193394187-a6855ff0-20cc-4f87-b4cd-2f0bef9368cb.png)
 
 ## Technologies and Packages Used
 
@@ -20,10 +21,10 @@ Hello competitor! This is the official source code for BITS 2022, the annual tas
  - sweetalert2
  - sass
 
-We also used some internal technologies in this code which are not showed in this list. 
+We also used some internal technologies in this project which are not showed in this list. 
 
 ## How to run the code
-This code is mainly made using express. Please refer below about how to run this code correctly.
+This code is mainly made using expressJS. Please refer the details below about how to run this code locally.
 
  1. Clone this repository by running below command or downloading the zip file for the code.
 ```bash
