@@ -1,6 +1,6 @@
 # Welcome to Bits'22
 
-Hello competitor. This is the official source code for the bits competition 2022. You can contribute to this code by giving us Bugs, Improvements etc. This repository is also participating to hacktoberfest, so if you're also doing hacktoberfest this is a great chance. Please refer below about more details.
+Hello competitor! This is the official source code for BITS 2022, the annual task-based intra school competition organized by the ICT Society Of Ananda College. You can contribute to this code by bug fixing, suggesting Improvements etc. This repository is also participating to hacktoberfest, so if you're also participating in hacktoberfest this is a great chance . Please refer the info below for more details.
 
 ## Technologies and Packages Used
 
@@ -8,7 +8,7 @@ Hello competitor. This is the official source code for the bits competition 2022
  - mongoose
  - connect-mongo
  - dotenv
- - ejs
+ - EJS
  - express
  - express-session
  - google-auth-library
